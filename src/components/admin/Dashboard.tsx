@@ -27,7 +27,7 @@ const timeFilters: TimeFilter[] = [
   { label: 'ITD', value: 'itd' },
 ]
 
-export function Dashboard() {
+export function AdminDashboard() {
   const [selectedFilter, setSelectedFilter] = useState<TimeFilter['value']>('itd')
   const [sortField, setSortField] = useState<string>('')
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc')
