@@ -10,9 +10,36 @@ import {
   ExternalLink,
   Phone,
   Mail,
-  Users,
-  FileText
+  FileText,
+  Plus
 } from 'lucide-react'
+
+const clientWorkflows = [
+  {
+    id: '1',
+    createDate: 'Jan 15, 2025',
+    department: 'Sales',
+    workflowName: 'Lead Processing',
+    nodes: 12,
+    executions: 234,
+    exceptions: 2,
+    timeSaved: 30,
+    moneySaved: 75,
+    status: 'active'
+  },
+  {
+    id: '2', 
+    createDate: 'Jan 10, 2025',
+    department: 'HR',
+    workflowName: 'Onboarding',
+    nodes: 8,
+    executions: 45,
+    exceptions: 0,
+    timeSaved: 120,
+    moneySaved: 180,
+    status: 'active'
+  }
+]
 
 const supportEngineers = [
   {
@@ -76,6 +103,16 @@ const pipelineSteps = [
 
 export function ClientManagement() {
   const [activeTab, setActiveTab] = useState('overview')
+  const [workflowStatuses, setWorkflowStatuses] = useState<Record<string, boolean>>(
+    Object.fromEntries(clientWorkflows.map(w => [w.id, w.status === 'active']))
+  )
+
+  const toggleWorkflowStatus = (workflowId: string) => {
+    setWorkflowStatuses(prev => ({
+      ...prev,
+      [workflowId]: !prev[workflowId]
+    }))
+  }
 
   return (
     <div className="p-6 space-y-6">
@@ -240,13 +277,71 @@ export function ClientManagement() {
         </TabsContent>
 
         <TabsContent value="workflows" className="space-y-6">
+          <div className="flex justify-between items-center">
+            <h2 className="text-xl font-semibold">Workflows</h2>
+            <Button className="bg-black hover:bg-gray-800 text-white">
+              <Plus className="h-4 w-4 mr-2" />
+              Add Workflow
+            </Button>
+          </div>
+          
           <Card>
-            <CardContent className="pt-6">
-              <div className="text-center py-12">
-                <Users className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                <h3 className="text-lg font-medium text-gray-900 mb-2">Client Workflows</h3>
-                <p className="text-gray-500">Workflow management coming soon...</p>
-              </div>
+            <CardContent className="p-0">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Create Date</TableHead>
+                    <TableHead>Department</TableHead>
+                    <TableHead>Workflow Name</TableHead>
+                    <TableHead># of Nodes</TableHead>
+                    <TableHead># of Executions</TableHead>
+                    <TableHead># of Exceptions</TableHead>
+                    <TableHead>Time Saved</TableHead>
+                    <TableHead>$ Saved</TableHead>
+                    <TableHead>Status</TableHead>
+                    <TableHead></TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {clientWorkflows.map((workflow) => (
+                    <TableRow key={workflow.id}>
+                      <TableCell className="font-medium">{workflow.createDate}</TableCell>
+                      <TableCell>{workflow.department}</TableCell>
+                      <TableCell>{workflow.workflowName}</TableCell>
+                      <TableCell>{workflow.nodes}</TableCell>
+                      <TableCell className="text-blue-600">{workflow.executions}</TableCell>
+                      <TableCell>{workflow.exceptions}</TableCell>
+                      <TableCell>
+                        <div>{workflow.timeSaved}</div>
+                        <div className="text-xs text-gray-500">min</div>
+                      </TableCell>
+                      <TableCell>
+                        <div>{workflow.moneySaved}</div>
+                        <div className="text-xs text-gray-500">USD</div>
+                      </TableCell>
+                      <TableCell>
+                        <Button
+                          variant={workflowStatuses[workflow.id] ? "default" : "outline"}
+                          size="sm"
+                          onClick={() => toggleWorkflowStatus(workflow.id)}
+                          className={`w-16 h-6 text-xs ${
+                            workflowStatuses[workflow.id] 
+                              ? 'bg-black hover:bg-gray-800 text-white' 
+                              : 'bg-white hover:bg-gray-50 text-gray-900 border-gray-300'
+                          }`}
+                        >
+                          {workflowStatuses[workflow.id] ? 'ON' : 'OFF'}
+                        </Button>
+                      </TableCell>
+                      <TableCell>
+                        <Button variant="link" className="text-blue-600 p-0 h-auto">
+                          ROI Report
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
             </CardContent>
           </Card>
         </TabsContent>

@@ -87,7 +87,8 @@ describe('ClientManagement', () => {
     await user.click(workflowsTab)
     
     // Should show workflows content
-    expect(screen.getByText('Workflow management coming soon...')).toBeInTheDocument()
+    expect(screen.getByText('Workflows')).toBeInTheDocument()
+    expect(screen.getByText('Add Workflow')).toBeInTheDocument()
   })
 
   it('renders contact information with icons', () => {
@@ -112,5 +113,66 @@ describe('ClientManagement', () => {
     const surveyLink = screen.getByText('https://docs.example.com/survey')
     expect(surveyLink).toBeInTheDocument()
     expect(surveyLink.closest('a')).toHaveAttribute('target', '_blank')
+  })
+
+  it('renders workflows table with correct data', async () => {
+    const user = userEvent.setup()
+    render(<ClientManagement />, { user: mockAdminUser })
+    
+    // Switch to workflows tab
+    const workflowsTab = screen.getByText('Client Workflows')
+    await user.click(workflowsTab)
+    
+    // Check table headers
+    expect(screen.getByText('Create Date')).toBeInTheDocument()
+    expect(screen.getByText('Department')).toBeInTheDocument()
+    expect(screen.getByText('Workflow Name')).toBeInTheDocument()
+    expect(screen.getByText('# of Nodes')).toBeInTheDocument()
+    expect(screen.getByText('# of Executions')).toBeInTheDocument()
+    expect(screen.getByText('# of Exceptions')).toBeInTheDocument()
+    expect(screen.getByText('Time Saved')).toBeInTheDocument()
+    expect(screen.getByText('$ Saved')).toBeInTheDocument()
+    expect(screen.getByText('Status')).toBeInTheDocument()
+    
+    // Check workflow data
+    expect(screen.getByText('Lead Processing')).toBeInTheDocument()
+    expect(screen.getByText('Sales')).toBeInTheDocument()
+    expect(screen.getByText('Onboarding')).toBeInTheDocument()
+    expect(screen.getByText('HR')).toBeInTheDocument()
+    expect(screen.getByText('234')).toBeInTheDocument()
+    expect(screen.getByText('45')).toBeInTheDocument()
+  })
+
+  it('renders ROI Report links in workflows table', async () => {
+    const user = userEvent.setup()
+    render(<ClientManagement />, { user: mockAdminUser })
+    
+    // Switch to workflows tab
+    const workflowsTab = screen.getByText('Client Workflows')
+    await user.click(workflowsTab)
+    
+    // Should have ROI Report links for each workflow
+    const roiLinks = screen.getAllByText('ROI Report')
+    expect(roiLinks).toHaveLength(2)
+  })
+
+  it('displays workflow status toggle buttons', async () => {
+    const user = userEvent.setup()
+    render(<ClientManagement />, { user: mockAdminUser })
+    
+    // Switch to workflows tab
+    const workflowsTab = screen.getByText('Client Workflows')
+    await user.click(workflowsTab)
+    
+    // Should have toggle buttons showing ON/OFF states
+    const onButtons = screen.getAllByText('ON')
+    expect(onButtons).toHaveLength(2) // Both workflows are active by default
+    
+    // Test toggling a workflow status
+    await user.click(onButtons[0])
+    
+    // Should now show OFF for the toggled workflow
+    expect(screen.getByText('OFF')).toBeInTheDocument()
+    expect(screen.getAllByText('ON')).toHaveLength(1) // One remaining ON
   })
 })
