@@ -6,6 +6,7 @@ import { Layout } from '@/components/layout/Layout'
 import { AdminDashboard } from '@/components/admin/Dashboard/Dashboard'
 import { ClientManagement } from '@/components/admin/ClientManagement/ClientManagement'
 import { UserManagement } from '@/components/admin/UserManagement/UserManagement'
+import { Subscriptions } from '@/components/admin/Subscriptions/Subscriptions'
 import { ClientDashboard } from '@/components/client/Dashboard/Dashboard'
 import { WorkflowManagement } from '@/components/client/WorkflowManagement/WorkflowManagement'
 import { ExceptionHandling } from '@/components/client/ExceptionHandling/ExceptionHandling'
@@ -75,6 +76,13 @@ function AppRoutes() {
         <ProtectedRoute>
           <AdminRoute>
             <UserManagement />
+          </AdminRoute>
+        </ProtectedRoute>
+      } />
+      <Route path="/admin/subscriptions" element={
+        <ProtectedRoute>
+          <AdminRoute>
+            <Subscriptions />
           </AdminRoute>
         </ProtectedRoute>
       } />
