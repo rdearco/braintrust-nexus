@@ -1,151 +1,116 @@
-import { describe, it, expect, vi } from 'vitest'
+import { describe, it, expect } from 'vitest'
 import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { render, mockAdminUser } from '@/test/utils'
 import { ClientManagement } from './ClientManagement'
 
-// Mock the data
-vi.mock('@/data/mockData', () => ({
-  mockClients: [
-    {
-      id: 'client-1',
-      name: 'Acme Corporation',
-      url: 'https://acme.com',
-      contractStartDate: new Date('2024-01-15'),
-      totalWorkflows: 12,
-      totalNodes: 45,
-      executions: 2847,
-      exceptions: 23,
-      totalRevenue: 450000,
-      timeSaved: 1200,
-      moneySaved: 180000,
-      departments: [],
-      createdAt: new Date('2024-01-15'),
-      updatedAt: new Date('2024-12-01'),
-    },
-    {
-      id: 'client-2',
-      name: 'Global Industries',
-      url: 'https://globalind.com',
-      contractStartDate: new Date('2024-03-10'),
-      totalWorkflows: 8,
-      totalNodes: 28,
-      executions: 1653,
-      exceptions: 12,
-      totalRevenue: 320000,
-      timeSaved: 840,
-      moneySaved: 125000,
-      departments: [],
-      createdAt: new Date('2024-03-10'),
-      updatedAt: new Date('2024-12-01'),
-    }
-  ]
-}))
-
 describe('ClientManagement', () => {
-  it('renders page title and add client button', () => {
+  it('renders page title and tabs', () => {
     render(<ClientManagement />, { user: mockAdminUser })
     
-    expect(screen.getByText('Client Management')).toBeInTheDocument()
-    expect(screen.getByText('Add New Client')).toBeInTheDocument()
+    expect(screen.getByText('Client Manager')).toBeInTheDocument()
+    expect(screen.getByText('Overview')).toBeInTheDocument()
+    expect(screen.getByText('Client Workflows')).toBeInTheDocument()
   })
 
-  it('displays search input', () => {
+  it('renders Assigned Support Engineers section', () => {
     render(<ClientManagement />, { user: mockAdminUser })
     
-    const searchInput = screen.getByPlaceholderText('Search clients...')
-    expect(searchInput).toBeInTheDocument()
+    expect(screen.getByText('Assigned Support Engineers')).toBeInTheDocument()
+    expect(screen.getByText('John Smith')).toBeInTheDocument()
+    expect(screen.getByText('Lead SE')).toBeInTheDocument()
+    expect(screen.getByText('Sarah Johnson')).toBeInTheDocument()
+    expect(screen.getByText('Support SE')).toBeInTheDocument()
   })
 
-  it('displays client cards', () => {
+  it('renders Client Users table', () => {
     render(<ClientManagement />, { user: mockAdminUser })
     
-    expect(screen.getByText('Acme Corporation')).toBeInTheDocument()
-    expect(screen.getByText('Global Industries')).toBeInTheDocument()
+    expect(screen.getByText('Client Users')).toBeInTheDocument()
+    
+    // Check table headers
+    expect(screen.getByText('Name')).toBeInTheDocument()
+    expect(screen.getByText('Email')).toBeInTheDocument()
+    expect(screen.getByText('Phone')).toBeInTheDocument()
+    expect(screen.getByText('Billing')).toBeInTheDocument()
+    expect(screen.getByText('Admin')).toBeInTheDocument()
+    expect(screen.getByText('Notes')).toBeInTheDocument()
+    
+    // Check user data
+    expect(screen.getByText('Robert Wilson')).toBeInTheDocument()
+    expect(screen.getByText('robert@company.com')).toBeInTheDocument()
+    expect(screen.getByText('Emily Brown')).toBeInTheDocument()
+    expect(screen.getByText('emily@company.com')).toBeInTheDocument()
   })
 
-  it('displays client information correctly', () => {
+  it('renders Document Links section', () => {
     render(<ClientManagement />, { user: mockAdminUser })
     
-    // Check client details - use getAllByText for numbers that appear multiple times
-    expect(screen.getAllByText('12')).toHaveLength(2) // Acme workflows (12) and Global exceptions (12)
-    expect(screen.getByText('8')).toBeInTheDocument() // Global workflows
-    expect(screen.getByText('23')).toBeInTheDocument() // Acme exceptions
+    expect(screen.getByText('Document Links')).toBeInTheDocument()
+    expect(screen.getByText('Survey Questions')).toBeInTheDocument()
+    expect(screen.getByText('Survey Results')).toBeInTheDocument()
+    expect(screen.getByText('Process Documentation')).toBeInTheDocument()
+    expect(screen.getByText('ADA Proposal')).toBeInTheDocument()
+    expect(screen.getByText('Contract')).toBeInTheDocument()
   })
 
-  it('filters clients based on search input', async () => {
+  it('renders Pipeline Progress section', () => {
+    render(<ClientManagement />, { user: mockAdminUser })
+    
+    expect(screen.getByText('Pipeline Progress')).toBeInTheDocument()
+    expect(screen.getByText('Discovery: Initial Survey')).toBeInTheDocument()
+    expect(screen.getByText('Discovery: Process Deep Dive')).toBeInTheDocument()
+    expect(screen.getByText('ADA Proposal Sent')).toBeInTheDocument()
+    expect(screen.getByText('ADA Proposal Review')).toBeInTheDocument()
+  })
+
+  it('shows completed steps with dates', () => {
+    render(<ClientManagement />, { user: mockAdminUser })
+    
+    expect(screen.getByText('Completed on Jan 15, 2025')).toBeInTheDocument()
+    expect(screen.getByText('Completed on Jan 20, 2025')).toBeInTheDocument()
+    expect(screen.getByText('Completed on Jan 25, 2025')).toBeInTheDocument()
+  })
+
+  it('shows Mark Complete button for in-progress step', () => {
+    render(<ClientManagement />, { user: mockAdminUser })
+    
+    expect(screen.getByText('Mark Complete')).toBeInTheDocument()
+  })
+
+  it('can switch between tabs', async () => {
     const user = userEvent.setup()
     render(<ClientManagement />, { user: mockAdminUser })
     
-    const searchInput = screen.getByPlaceholderText('Search clients...')
+    // Click on Client Workflows tab
+    const workflowsTab = screen.getByText('Client Workflows')
+    await user.click(workflowsTab)
     
-    await user.type(searchInput, 'Acme')
-    
-    expect(screen.getByText('Acme Corporation')).toBeInTheDocument()
-    expect(screen.queryByText('Global Industries')).not.toBeInTheDocument() // Should be filtered out
+    // Should show workflows content
+    expect(screen.getByText('Workflow management coming soon...')).toBeInTheDocument()
   })
 
-  it('opens add client modal when button is clicked', async () => {
-    const user = userEvent.setup()
+  it('renders contact information with icons', () => {
     render(<ClientManagement />, { user: mockAdminUser })
     
-    const addButton = screen.getByText('Add New Client')
-    await user.click(addButton)
-    
-    expect(screen.getByText('Company Name')).toBeInTheDocument()
-    expect(screen.getByText('Company URL')).toBeInTheDocument()
-    expect(screen.getByText('Contract Start Date')).toBeInTheDocument()
+    // Phone numbers should be displayed
+    expect(screen.getByText('+1 555-0123')).toBeInTheDocument()
+    expect(screen.getByText('+1 555-0124')).toBeInTheDocument()
   })
 
-  it('closes add client modal when cancel is clicked', async () => {
-    const user = userEvent.setup()
+  it('shows user notes correctly', () => {
     render(<ClientManagement />, { user: mockAdminUser })
     
-    // Open modal
-    const addButton = screen.getByText('Add New Client')
-    await user.click(addButton)
-    
-    // Close modal
-    const cancelButton = screen.getByText('Cancel')
-    await user.click(cancelButton)
-    
-    expect(screen.queryByText('Company Name')).not.toBeInTheDocument()
+    expect(screen.getByText('Primary contact')).toBeInTheDocument()
+    expect(screen.getByText('Technical lead')).toBeInTheDocument()
   })
 
-  it('displays summary statistics', () => {
+  it('renders external document links', () => {
     render(<ClientManagement />, { user: mockAdminUser })
     
-    expect(screen.getByText('Total Clients')).toBeInTheDocument()
-    expect(screen.getByText('Total Workflows')).toBeInTheDocument()
-    expect(screen.getByText('Total Revenue')).toBeInTheDocument()
-    expect(screen.getByText('Total Time Saved')).toBeInTheDocument()
-  })
-
-  it('calculates summary statistics correctly', () => {
-    render(<ClientManagement />, { user: mockAdminUser })
-    
-    // Should show sum of all clients' data
-    expect(screen.getByText('2')).toBeInTheDocument() // Total clients
-    expect(screen.getByText('20')).toBeInTheDocument() // Total workflows (12 + 8)
-    expect(screen.getByText('$770,000')).toBeInTheDocument() // Total revenue
-    expect(screen.getByText('2040 hrs')).toBeInTheDocument() // Total time saved
-  })
-
-  it('displays client contract start dates', () => {
-    render(<ClientManagement />, { user: mockAdminUser })
-    
-    // The dates are formatted using toLocaleDateString() which may vary by locale
-    // Just check that contract start text exists
-    expect(screen.getAllByText(/Contract started:/)).toHaveLength(2)
-  })
-
-  it('includes view details and workflows links', () => {
-    render(<ClientManagement />, { user: mockAdminUser })
-    
-    const viewDetailsButtons = screen.getAllByText('View Details')
-    const workflowsButtons = screen.getAllByText('Workflows')
-    
-    expect(viewDetailsButtons).toHaveLength(2)
-    expect(workflowsButtons).toHaveLength(4) // 2 labels + 2 button links
+    // Should have external links
+    const surveyLink = screen.getByText('https://docs.example.com/survey')
+    expect(surveyLink).toBeInTheDocument()
+    expect(surveyLink.closest('a')).toHaveAttribute('target', '_blank')
   })
 })
