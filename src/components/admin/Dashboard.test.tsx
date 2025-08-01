@@ -1,7 +1,7 @@
 import { describe, it, expect, vi } from 'vitest'
 import { screen, fireEvent } from '@testing-library/react'
 import { render, mockAdminUser } from '@/test/utils'
-import { Dashboard } from './Dashboard/Dashboard'
+import { AdminDashboard } from './Dashboard/Dashboard'
 
 // Mock the data
 vi.mock('@/data/mockData', () => ({
@@ -41,7 +41,7 @@ vi.mock('@/data/mockData', () => ({
 
 describe('AdminDashboard', () => {
   it('renders dashboard title', () => {
-render(<Dashboard />, { user: mockAdminUser })
+render(<AdminDashboard />, { user: mockAdminUser })
     expect(screen.getByText('Dashboard Overview')).toBeInTheDocument()
   })
 
