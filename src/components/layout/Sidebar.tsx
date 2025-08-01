@@ -3,10 +3,8 @@ import {
   LayoutDashboard, 
   Users, 
   Building2, 
-  Settings, 
   Workflow,
   AlertTriangle,
-  BarChart3,
   LogOut
 } from 'lucide-react'
 import { useAuth } from '@/contexts/AuthContext'
@@ -23,18 +21,14 @@ export function Sidebar({ className }: SidebarProps) {
 
   const adminNavItems = [
     { icon: LayoutDashboard, label: 'Dashboard', href: '/admin' },
-    { icon: Building2, label: 'Clients', href: '/admin/clients' },
     { icon: Users, label: 'Users', href: '/admin/users' },
-    { icon: BarChart3, label: 'Analytics', href: '/admin/analytics' },
-    { icon: Settings, label: 'Settings', href: '/admin/settings' },
+    { icon: Building2, label: 'Clients', href: '/admin/clients' },
   ]
 
   const clientNavItems = [
     { icon: LayoutDashboard, label: 'Dashboard', href: '/client' },
     { icon: Workflow, label: 'Workflows', href: '/client/workflows' },
     { icon: AlertTriangle, label: 'Exceptions', href: '/client/exceptions' },
-    { icon: BarChart3, label: 'Analytics', href: '/client/analytics' },
-    { icon: Settings, label: 'Settings', href: '/client/settings' },
   ]
 
   const navItems = user?.role === 'client' ? clientNavItems : adminNavItems

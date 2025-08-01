@@ -29,7 +29,12 @@ export function AuthProvider({ children }: AuthProviderProps) {
   useEffect(() => {
     const storedUser = localStorage.getItem('nexus_user')
     if (storedUser) {
-      setUser(JSON.parse(storedUser))
+      try {
+        setUser(JSON.parse(storedUser))
+      } catch (error) {
+        console.error('Failed to parse stored user data:', error)
+        localStorage.removeItem('nexus_user')
+      }
     }
     setIsLoading(false)
   }, [])
