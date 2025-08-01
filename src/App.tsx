@@ -3,12 +3,12 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import { AuthProvider, useAuth } from '@/contexts/AuthContext'
 import { LoginForm } from '@/components/auth/LoginForm'
 import { Layout } from '@/components/layout/Layout'
-import { AdminDashboard } from '@/components/admin/Dashboard'
-import { ClientManagement } from '@/components/admin/ClientManagement'
-import { UserManagement } from '@/components/admin/UserManagement'
-import { ClientDashboard } from '@/components/client/Dashboard'
-import { WorkflowManagement } from '@/components/client/WorkflowManagement'
-import { ExceptionHandling } from '@/components/client/ExceptionHandling'
+import { AdminDashboard } from '@/components/admin/Dashboard/Dashboard'
+import { ClientManagement } from '@/components/admin/ClientManagement/ClientManagement'
+import { UserManagement } from '@/components/admin/UserManagement/UserManagement'
+import { ClientDashboard } from '@/components/client/Dashboard/Dashboard'
+import { WorkflowManagement } from '@/components/client/WorkflowManagement/WorkflowManagement'
+import { ExceptionHandling } from '@/components/client/ExceptionHandling/ExceptionHandling'
 import './index.css'
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
@@ -78,26 +78,6 @@ function AppRoutes() {
           </AdminRoute>
         </ProtectedRoute>
       } />
-      <Route path="/admin/analytics" element={
-        <ProtectedRoute>
-          <AdminRoute>
-            <div className="p-6">
-              <h1 className="text-3xl font-bold">Analytics</h1>
-              <p className="text-gray-600 mt-2">Analytics dashboard coming soon...</p>
-            </div>
-          </AdminRoute>
-        </ProtectedRoute>
-      } />
-      <Route path="/admin/settings" element={
-        <ProtectedRoute>
-          <AdminRoute>
-            <div className="p-6">
-              <h1 className="text-3xl font-bold">Settings</h1>
-              <p className="text-gray-600 mt-2">Settings page coming soon...</p>
-            </div>
-          </AdminRoute>
-        </ProtectedRoute>
-      } />
       
       {/* Client Routes */}
       <Route path="/client" element={
@@ -118,26 +98,6 @@ function AppRoutes() {
         <ProtectedRoute>
           <ClientRoute>
             <ExceptionHandling />
-          </ClientRoute>
-        </ProtectedRoute>
-      } />
-      <Route path="/client/analytics" element={
-        <ProtectedRoute>
-          <ClientRoute>
-            <div className="p-6">
-              <h1 className="text-3xl font-bold">Analytics</h1>
-              <p className="text-gray-600 mt-2">Analytics dashboard coming soon...</p>
-            </div>
-          </ClientRoute>
-        </ProtectedRoute>
-      } />
-      <Route path="/client/settings" element={
-        <ProtectedRoute>
-          <ClientRoute>
-            <div className="p-6">
-              <h1 className="text-3xl font-bold">Settings</h1>
-              <p className="text-gray-600 mt-2">Settings page coming soon...</p>
-            </div>
           </ClientRoute>
         </ProtectedRoute>
       } />

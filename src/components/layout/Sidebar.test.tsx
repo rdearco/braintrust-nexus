@@ -1,11 +1,9 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { screen } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
 import { render, mockAdminUser, mockClientUser, mockSEUser } from '@/test/utils'
 import { Sidebar } from './Sidebar'
 
 // Mock useAuth and useLocation
-const mockLogout = vi.fn()
 let mockCurrentUser = mockAdminUser
 
 vi.mock('@/contexts/AuthContext', async () => {
@@ -14,7 +12,6 @@ vi.mock('@/contexts/AuthContext', async () => {
     ...actual,
     useAuth: () => ({
       user: mockCurrentUser,
-      logout: mockLogout,
     }),
   }
 })
@@ -31,7 +28,6 @@ vi.mock('react-router-dom', async () => {
 
 describe('Sidebar', () => {
   beforeEach(() => {
-    mockLogout.mockClear()
     mockCurrentUser = mockAdminUser // Reset to default
   })
 
@@ -77,43 +73,6 @@ describe('Sidebar', () => {
     expect(screen.getByText('Users')).toBeInTheDocument()
   })
 
-  it('displays user information', () => {
-    render(<Sidebar />)
-    
-    expect(screen.getByText('Admin User')).toBeInTheDocument()
-    expect(screen.getByText('admin')).toBeInTheDocument()
-  })
-
-  it('shows user avatar with first letter of name', () => {
-    render(<Sidebar />)
-    
-    expect(screen.getByText('A')).toBeInTheDocument() // First letter of "Admin User"
-  })
-
-  it('displays different user roles correctly', () => {
-    mockCurrentUser = mockClientUser
-    render(<Sidebar />)
-    expect(screen.getByText('client')).toBeInTheDocument()
-    
-    mockCurrentUser = mockSEUser
-    render(<Sidebar />)
-    expect(screen.getByText('se')).toBeInTheDocument()
-  })
-
-  it('includes sign out button', () => {
-    render(<Sidebar />)
-    expect(screen.getByText('Sign Out')).toBeInTheDocument()
-  })
-
-  it('calls logout function when sign out is clicked', async () => {
-    const user = userEvent.setup()
-    render(<Sidebar />)
-    
-    const signOutButton = screen.getByText('Sign Out')
-    await user.click(signOutButton)
-    
-    expect(mockLogout).toHaveBeenCalled()
-  })
 
   it('highlights active navigation item', () => {
     vi.mock('react-router-dom', async () => {
@@ -174,12 +133,4 @@ describe('Sidebar', () => {
     expect(screen.getByText('Users')).toBeInTheDocument()
   })
 
-  it('shows correct user information for different users', () => {
-    mockCurrentUser = mockSEUser
-    render(<Sidebar />)
-    
-    expect(screen.getByText('Solutions Engineer')).toBeInTheDocument()
-    expect(screen.getByText('se')).toBeInTheDocument()
-    expect(screen.getByText('S')).toBeInTheDocument() // First letter
-  })
 })

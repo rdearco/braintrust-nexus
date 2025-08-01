@@ -40,6 +40,11 @@ describe('Layout', () => {
     // Check if the layout has the expected CSS classes
     const layoutDiv = container.firstChild
     expect(layoutDiv).toHaveClass('flex', 'h-screen', 'bg-gray-100')
+    
+    // Check if header exists
+    const headerElement = container.querySelector('header')
+    expect(headerElement).toBeInTheDocument()
+    expect(headerElement).toHaveClass('bg-white', 'border-b', 'border-gray-200')
   })
 
   it('renders sidebar with correct styling', () => {
@@ -89,7 +94,7 @@ describe('Layout', () => {
     expect(screen.getByText('Page Footer')).toBeInTheDocument()
   })
 
-  it('maintains sidebar functionality within layout', () => {
+  it('renders header with user profile and logout', () => {
     render(
       <Layout>
         <div>Test Content</div>
@@ -97,9 +102,12 @@ describe('Layout', () => {
       { user: mockAdminUser }
     )
     
-    // Sidebar functionality should work
-    expect(screen.getByText('Admin User')).toBeInTheDocument()
-    expect(screen.getByText('Sign Out')).toBeInTheDocument()
+    // Header should contain user info and logout button
+    expect(screen.getByText('A')).toBeInTheDocument() // Avatar initial
+    
+    // Logout button should be present (icon only, no text)
+    const logoutButton = screen.getByRole('button')
+    expect(logoutButton).toBeInTheDocument()
   })
 
   it('handles empty children gracefully', () => {

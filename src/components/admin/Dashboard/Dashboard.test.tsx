@@ -41,7 +41,7 @@ vi.mock('@/data/mockData', () => ({
 
 describe('AdminDashboard', () => {
   it('renders dashboard title', () => {
-    render(<AdminDashboard />, { user: mockAdminUser })
+render(<AdminDashboard />, { user: mockAdminUser })
     expect(screen.getByText('Dashboard Overview')).toBeInTheDocument()
   })
 

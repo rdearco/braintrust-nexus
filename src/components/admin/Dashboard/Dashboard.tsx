@@ -231,9 +231,11 @@ export function AdminDashboard() {
       <Card>
         <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle>All Clients</CardTitle>
-          <Button>
-            <Plus className="h-4 w-4 mr-2" />
-            Add Client
+          <Button asChild className="whitespace-nowrap flex items-center">
+            <Link to="/admin/clients" className="flex items-center gap-2">
+              <Plus className="h-4 w-4" />
+              Add Client
+            </Link>
           </Button>
         </CardHeader>
         <CardContent>
