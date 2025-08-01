@@ -31,20 +31,9 @@ describe('Sidebar', () => {
     mockCurrentUser = mockAdminUser // Reset to default
   })
 
-  it('renders Braintrust Nexus title', () => {
+  it('renders Braintrust Nexus logo', () => {
     render(<Sidebar />)
-    expect(screen.getByText('Braintrust Nexus')).toBeInTheDocument()
-  })
-
-  it('displays Admin Portal for admin users', () => {
-    render(<Sidebar />)
-    expect(screen.getByText('Admin Portal')).toBeInTheDocument()
-  })
-
-  it('displays Client Portal for client users', () => {
-    mockCurrentUser = mockClientUser
-    render(<Sidebar />)
-    expect(screen.getByText('Client Portal')).toBeInTheDocument()
+    expect(screen.getByAltText('Braintrust Nexus')).toBeInTheDocument()
   })
 
   it('shows admin navigation items for admin users', () => {

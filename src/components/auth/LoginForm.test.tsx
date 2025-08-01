@@ -28,7 +28,7 @@ describe('LoginForm', () => {
   it('renders login form with title', () => {
     render(<LoginForm />, { user: null })
     
-    expect(screen.getByText('Braintrust Nexus')).toBeInTheDocument()
+    expect(screen.getByAltText('Braintrust Nexus')).toBeInTheDocument()
     expect(screen.getByText('Sign in to your account')).toBeInTheDocument()
   })
 

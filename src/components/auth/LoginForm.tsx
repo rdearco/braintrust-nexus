@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { useAuth } from '@/contexts/AuthContext'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent, CardDescription, CardHeader } from '@/components/ui/card'
 
 export function LoginForm() {
   const [email, setEmail] = useState('')
@@ -25,7 +25,13 @@ export function LoginForm() {
     <div className="min-h-screen flex items-center justify-center bg-gray-50">
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
-          <CardTitle className="text-2xl font-bold">Braintrust Nexus</CardTitle>
+          <div className="flex justify-center mb-4">
+            <img 
+              src="https://workos.imgix.net/app-branding/environment_01JR8CW1AKR2KQEZCHW6VM0JCY/01JT0BYG910NC365W8BPP1P5E1" 
+              alt="Braintrust Nexus"
+              className="h-10"
+            />
+          </div>
           <CardDescription>
             Sign in to your account
           </CardDescription>

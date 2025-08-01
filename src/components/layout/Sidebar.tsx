@@ -33,11 +33,12 @@ export function Sidebar({ className }: SidebarProps) {
 
   return (
     <div className={cn('flex h-full w-64 flex-col bg-gray-900 text-white', className)}>
-      <div className="p-6">
-        <h1 className="text-2xl font-bold">Braintrust Nexus</h1>
-        <p className="text-sm text-gray-400 mt-1">
-          {user?.role === 'client' ? 'Client Portal' : 'Admin Portal'}
-        </p>
+      <div className="p-4 pt-2">
+        <img 
+          src="https://workos.imgix.net/app-branding/environment_01JR8CW1AKR2KQEZCHW6VM0JCY/01JT0BYG910NC365W8BPP1P5E1" 
+          alt="Braintrust Nexus"
+          className="h-8 mb-2"
+        />
       </div>
       
       <nav className="flex-1 px-4">

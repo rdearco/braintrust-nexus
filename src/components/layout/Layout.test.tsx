@@ -12,7 +12,7 @@ describe('Layout', () => {
       { user: mockAdminUser }
     )
     
-    expect(screen.getByText('Braintrust Nexus')).toBeInTheDocument() // From Sidebar
+    expect(screen.getByAltText('Braintrust Nexus')).toBeInTheDocument() // From Sidebar
     expect(screen.getByText('Test Content')).toBeInTheDocument() // Children content
   })
 
@@ -119,6 +119,6 @@ describe('Layout', () => {
     )
     
     // Sidebar should still render
-    expect(screen.getByText('Braintrust Nexus')).toBeInTheDocument()
+    expect(screen.getByAltText('Braintrust Nexus')).toBeInTheDocument()
   })
 })
