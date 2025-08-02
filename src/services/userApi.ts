@@ -145,7 +145,7 @@ export class UserApiService {
     }
 
     // In a real app, this would update the database
-    // mockUsers[userIndex] = updatedUser
+    mockUsers[userIndex] = updatedUser
 
     return {
       data: updatedUser,
@@ -171,7 +171,7 @@ export class UserApiService {
     }
 
     // In a real app, this would delete from the database
-    // mockUsers.splice(userIndex, 1)
+    mockUsers.splice(userIndex, 1)
 
     return {
       data: null,
@@ -194,7 +194,7 @@ export class UserApiService {
     }
 
     // In a real app, this would save to the database
-    // mockUsers.push(newUser)
+    mockUsers.push(newUser)
 
     return {
       data: newUser,

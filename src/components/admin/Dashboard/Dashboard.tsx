@@ -31,15 +31,20 @@ export function AdminDashboard() {
   const [selectedFilter, setSelectedFilter] = useState<TimeFilter['value']>('itd')
   const [sortField, setSortField] = useState<string>('')
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc')
+  const [isInitialLoad, setIsInitialLoad] = useState(true)
 
   // Use API hooks instead of direct mock data
-  const { clients, loading: _, error: clientsError, updateSort } = useClients({
+  const { metrics, loading: metricsLoading, error: metricsError } = useDashboardMetrics()
+  const { clients, loading: clientsLoading, error: clientsError, updateSort } = useClients({
     limit: 50, // Show more clients on dashboard
     sortBy: sortField,
     sortOrder: sortDirection
   })
   
-  const { metrics, loading: metricsLoading, error: metricsError } = useDashboardMetrics()
+  // Set initial load to false after first load
+  if (isInitialLoad && !clientsLoading && !metricsLoading) {
+    setIsInitialLoad(false)
+  }
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('en-US', {
@@ -65,8 +70,8 @@ export function AdminDashboard() {
     }
   }
 
-  // Show loading states//
-  if (metricsLoading) {
+  // Show full page loading when metrics are loading or during initial load
+  if (metricsLoading || (clientsLoading && isInitialLoad)) {
     return (
       <div className="p-6 space-y-6">
         <div className="flex justify-between items-center">
@@ -104,9 +109,6 @@ export function AdminDashboard() {
       <div className="p-6 space-y-6">
         <div className="flex justify-between items-center">
           <h1 className="text-3xl font-bold">Dashboard Overview</h1>
-        </div>
-        <div className="flex items-center justify-center h-64">
-          <div className="text-lg text-red-600">No metrics data available</div>
         </div>
       </div>
     )
@@ -277,7 +279,16 @@ export function AdminDashboard() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {sortedClients.map((client) => (
+              {clientsLoading && !isInitialLoad ? (
+                <TableRow>
+                  <TableCell colSpan={9} className="text-center py-8">
+                    <div className="flex items-center justify-center">
+                      <div className="text-lg">Loading clients...</div>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ) : (
+                sortedClients.map((client) => (
                 <TableRow key={client.id}>
                   <TableCell>
                     <Link 
@@ -321,7 +332,8 @@ export function AdminDashboard() {
                   <TableCell>{formatHours(client.timeSaved)}</TableCell>
                   <TableCell>{formatCurrency(client.moneySaved)}</TableCell>
                 </TableRow>
-              ))}
+                ))
+              )}
             </TableBody>
           </Table>
         </CardContent>

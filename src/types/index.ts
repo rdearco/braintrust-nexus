@@ -3,6 +3,10 @@ export interface User {
   email: string
   name: string
   role: 'admin' | 'se' | 'client'
+  phone?: string
+  costRate?: number
+  billRate?: number
+  avatar?: string
   companyId?: string
   assignedClients?: string[]
   createdAt: Date
