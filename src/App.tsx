@@ -12,6 +12,7 @@ import { Exceptions } from '@/components/admin/Exceptions/Exceptions'
 import { Credentials } from '@/components/admin/Credentials/Credentials'
 import { ClientDashboard } from '@/components/client/Dashboard/Dashboard'
 import { WorkflowManagement } from '@/components/client/WorkflowManagement/WorkflowManagement'
+import { Reporting } from '@/components/client/Reporting/Reporting'
 import { ExceptionHandling } from '@/components/client/ExceptionHandling/ExceptionHandling'
 import './index.css'
 
@@ -123,6 +124,13 @@ function AppRoutes() {
         <ProtectedRoute>
           <ClientRoute>
             <WorkflowManagement />
+          </ClientRoute>
+        </ProtectedRoute>
+      } />
+      <Route path="/client/reporting" element={
+        <ProtectedRoute>
+          <ClientRoute>
+            <Reporting />
           </ClientRoute>
         </ProtectedRoute>
       } />

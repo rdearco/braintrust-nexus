@@ -7,7 +7,8 @@ import {
   AlertTriangle,
   CreditCard,
   Shield,
-  Key
+  Key,
+  BarChart3
 } from 'lucide-react'
 import { useAuth } from '@/contexts/AuthContext'
 import { cn } from '@/lib/utils'
@@ -32,6 +33,7 @@ export function Sidebar({ className }: SidebarProps) {
   const clientNavItems = [
     { icon: LayoutDashboard, label: 'Dashboard', href: '/client' },
     { icon: Workflow, label: 'Workflow ROI', href: '/client/workflows' },
+    { icon: BarChart3, label: 'Reporting', href: '/client/reporting' },
     { icon: AlertTriangle, label: 'Exceptions', href: '/client/exceptions' },
   ]
 
