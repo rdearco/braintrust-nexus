@@ -8,7 +8,8 @@ import {
   CreditCard,
   Shield,
   Key,
-  BarChart3
+  BarChart3,
+  Receipt
 } from 'lucide-react'
 import { useAuth } from '@/contexts/AuthContext'
 import { cn } from '@/lib/utils'
@@ -24,6 +25,7 @@ export function Sidebar({ className }: SidebarProps) {
   const adminNavItems = [
     { icon: LayoutDashboard, label: 'Dashboard', href: '/admin' },
     { icon: Users, label: 'Users', href: '/admin/users' },
+    { icon: Receipt, label: 'Billing', href: '/admin/billing' },
     { icon: Building2, label: 'Clients', href: '/admin/clients' },
     { icon: CreditCard, label: 'Subscriptions', href: '/admin/subscriptions' },
     { icon: Key, label: 'Credentials', href: '/admin/credentials' },

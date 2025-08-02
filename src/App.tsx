@@ -10,6 +10,7 @@ import { Subscriptions } from '@/components/admin/Subscriptions/Subscriptions'
 import { SubscriptionNew } from '@/components/admin/SubscriptionNew/SubscriptionNew'
 import { Exceptions } from '@/components/admin/Exceptions/Exceptions'
 import { Credentials } from '@/components/admin/Credentials/Credentials'
+import { Billing } from '@/components/admin/Billing/Billing'
 import { ClientDashboard } from '@/components/client/Dashboard/Dashboard'
 import { WorkflowManagement } from '@/components/client/WorkflowManagement/WorkflowManagement'
 import { Reporting } from '@/components/client/Reporting/Reporting'
@@ -108,6 +109,13 @@ function AppRoutes() {
         <ProtectedRoute>
           <AdminRoute>
             <Credentials />
+          </AdminRoute>
+        </ProtectedRoute>
+      } />
+      <Route path="/admin/billing" element={
+        <ProtectedRoute>
+          <AdminRoute>
+            <Billing />
           </AdminRoute>
         </ProtectedRoute>
       } />
