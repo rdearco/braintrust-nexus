@@ -1,379 +1,200 @@
-import { useState } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Badge } from '@/components/ui/badge'
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
-import { 
-  Plus, 
-  Search, 
-  Building2, 
-  CreditCard,
-  Calendar,
-  TrendingUp,
-  Download,
-  Filter,
-  MoreHorizontal,
-  Eye,
-  Edit,
-  CheckCircle,
-  AlertCircle,
-  Clock,
-} from 'lucide-react'
-import { mockClients } from '@/data/mockData'
+import { Download } from 'lucide-react'
 
-// Mock billing data
-const mockBillingData = [
-  {
-    id: 'bill-1',
-    clientId: 'client-1',
-    clientName: 'Acme Corporation',
-    invoiceNumber: 'INV-2024-001',
-    amount: 45000,
-    status: 'paid',
-    dueDate: new Date('2024-12-15'),
-    paidDate: new Date('2024-12-10'),
-    period: 'December 2024',
-    description: 'Monthly subscription - Premium Plan',
-    workflows: 12,
-    executions: 2847,
+// Mock billing data for admin view
+const mockAdminBillingData = {
+  currentPlan: {
+    name: 'Enterprise',
+    baseFee: 2000,
+    period: 'month'
   },
-  {
-    id: 'bill-2',
-    clientId: 'client-2',
-    clientName: 'Global Industries',
-    invoiceNumber: 'INV-2024-002',
-    amount: 32000,
-    status: 'pending',
-    dueDate: new Date('2024-12-20'),
-    paidDate: null,
-    period: 'December 2024',
-    description: 'Monthly subscription - Standard Plan',
-    workflows: 8,
-    executions: 1653,
+  credits: {
+    remaining: 8450,
+    renewDate: new Date('2025-05-01')
   },
-  {
-    id: 'bill-3',
-    clientId: 'client-3',
-    clientName: 'TechStart Inc',
-    invoiceNumber: 'INV-2024-003',
-    amount: 18000,
-    status: 'overdue',
-    dueDate: new Date('2024-12-10'),
-    paidDate: null,
-    period: 'December 2024',
-    description: 'Monthly subscription - Basic Plan',
-    workflows: 5,
-    executions: 892,
+  seHours: {
+    used: 12.5,
+    total: 20,
+    remaining: 7.5
   },
-  {
-    id: 'bill-4',
-    clientId: 'client-1',
-    clientName: 'Acme Corporation',
-    invoiceNumber: 'INV-2024-004',
-    amount: 45000,
-    status: 'draft',
-    dueDate: new Date('2025-01-15'),
-    paidDate: null,
-    period: 'January 2025',
-    description: 'Monthly subscription - Premium Plan',
-    workflows: 12,
-    executions: 0,
+  usage: {
+    apiCalls: 245678,
+    storageUsed: '1.2 TB',
+    activeUsers: 127
   },
-]
+  recentInvoices: [
+    {
+      id: 'inv-1',
+      month: 'April 2025',
+      invoiceNumber: 'Invoice #2025-04',
+      amount: 2450.00
+    },
+    {
+      id: 'inv-2',
+      month: 'March 2025',
+      invoiceNumber: 'Invoice #2025-03',
+      amount: 2450.00
+    },
+    {
+      id: 'inv-3',
+      month: 'February 2025',
+      invoiceNumber: 'Invoice #2025-02',
+      amount: 2450.00
+    }
+  ],
+  paymentMethod: {
+    type: 'Visa',
+    lastFour: '4242',
+    expires: '12/25'
+  }
+}
 
 export function Billing() {
-  const [searchTerm, setSearchTerm] = useState('')
-  const [selectedStatus, setSelectedStatus] = useState<string>('all')
-  const [selectedClient, setSelectedClient] = useState<string>('all')
-
-  const filteredBilling = mockBillingData.filter(bill => {
-    const matchesSearch = bill.clientName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         bill.invoiceNumber.toLowerCase().includes(searchTerm.toLowerCase())
-    const matchesStatus = selectedStatus === 'all' || bill.status === selectedStatus
-    const matchesClient = selectedClient === 'all' || bill.clientId === selectedClient
-    return matchesSearch && matchesStatus && matchesClient
-  })
-
-  const getStatusBadgeVariant = (status: string) => {
-    switch (status) {
-      case 'paid':
-        return 'default'
-      case 'pending':
-        return 'secondary'
-      case 'overdue':
-        return 'destructive'
-      case 'draft':
-        return 'outline'
-      default:
-        return 'outline'
-    }
-  }
-
-  const getStatusIcon = (status: string) => {
-    switch (status) {
-      case 'paid':
-        return <CheckCircle className="h-3 w-3" />
-      case 'pending':
-        return <Clock className="h-3 w-3" />
-      case 'overdue':
-        return <AlertCircle className="h-3 w-3" />
-      case 'draft':
-        return <Edit className="h-3 w-3" />
-      default:
-        return <Clock className="h-3 w-3" />
-    }
-  }
-
-  const totalRevenue = mockBillingData.filter(bill => bill.status === 'paid').reduce((sum, bill) => sum + bill.amount, 0)
-  const pendingAmount = mockBillingData.filter(bill => bill.status === 'pending').reduce((sum, bill) => sum + bill.amount, 0)
-  const overdueAmount = mockBillingData.filter(bill => bill.status === 'overdue').reduce((sum, bill) => sum + bill.amount, 0)
-  const totalInvoices = mockBillingData.length
-
   return (
     <div className="p-6 space-y-6">
       <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-bold">Billing Management</h1>
-        <div className="flex gap-2">
-          <Button variant="outline">
-            <Download className="h-4 w-4 mr-2" />
-            Export
-          </Button>
-          <Button>
-            <Plus className="h-4 w-4 mr-2" />
-            Create Invoice
-          </Button>
-        </div>
+        <h1 className="text-3xl font-bold">Billing Overview</h1>
       </div>
 
-      {/* Summary Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <Card>
-          <CardContent className="pt-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <div className="text-2xl font-bold text-green-600">
-                  ${totalRevenue.toLocaleString()}
-                </div>
-                <div className="text-sm font-medium text-gray-600">Total Revenue</div>
-              </div>
-              <TrendingUp className="h-8 w-8 text-green-600" />
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="pt-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <div className="text-2xl font-bold text-blue-600">
-                  ${pendingAmount.toLocaleString()}
-                </div>
-                <div className="text-sm font-medium text-gray-600">Pending Amount</div>
-              </div>
-              <Clock className="h-8 w-8 text-blue-600" />
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="pt-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <div className="text-2xl font-bold text-red-600">
-                  ${overdueAmount.toLocaleString()}
-                </div>
-                <div className="text-sm font-medium text-gray-600">Overdue Amount</div>
-              </div>
-              <AlertCircle className="h-8 w-8 text-red-600" />
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="pt-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <div className="text-2xl font-bold">{totalInvoices}</div>
-                <div className="text-sm font-medium text-gray-600">Total Invoices</div>
-              </div>
-              <CreditCard className="h-8 w-8 text-gray-600" />
-            </div>
-          </CardContent>
-        </Card>
-      </div>
+             {/* Billing Overview Cards */}
+       <div className="space-y-4">
+         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+           {/* Current Plan Card */}
+           <Card>
+             <CardContent className="pt-6">
+               <div className="text-center">
+                 <div className="text-sm font-medium text-gray-600 mb-2">Current Plan</div>
+                 <div className="text-2xl font-bold text-gray-900 mb-1">Enterprise</div>
+                 <div className="text-sm text-gray-500">$2,000/month base fee</div>
+               </div>
+             </CardContent>
+           </Card>
 
-      {/* Search and Filters */}
-      <div className="flex gap-4">
-        <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-          <Input
-            placeholder="Search invoices or clients..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-10"
-          />
-        </div>
-        <div className="flex gap-2">
-          <select 
-            className="h-10 px-3 py-2 text-sm border border-input bg-background rounded-md"
-            value={selectedStatus}
-            onChange={(e) => setSelectedStatus(e.target.value)}
-          >
-            <option value="all">All Status</option>
-            <option value="paid">Paid</option>
-            <option value="pending">Pending</option>
-            <option value="overdue">Overdue</option>
-            <option value="draft">Draft</option>
-          </select>
-          <select 
-            className="h-10 px-3 py-2 text-sm border border-input bg-background rounded-md"
-            value={selectedClient}
-            onChange={(e) => setSelectedClient(e.target.value)}
-          >
-            <option value="all">All Clients</option>
-            {mockClients.map(client => (
-              <option key={client.id} value={client.id}>{client.name}</option>
-            ))}
-          </select>
-          <Button variant="outline" size="sm">
-            <Filter className="h-4 w-4" />
-          </Button>
-        </div>
-      </div>
+           {/* Credits Remaining Card */}
+           <Card>
+             <CardContent className="pt-6">
+               <div className="text-center">
+                 <div className="text-sm font-medium text-gray-600 mb-2">Credits Remaining</div>
+                 <div className="text-2xl font-bold text-gray-900 mb-1">8,450</div>
+                 <div className="text-sm text-gray-500">Renews on May 1, 2025</div>
+               </div>
+             </CardContent>
+           </Card>
 
-      {/* Billing Table */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Invoices ({filteredBilling.length})</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Client</TableHead>
-                <TableHead>Invoice</TableHead>
-                <TableHead>Amount</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Due Date</TableHead>
-                <TableHead>Period</TableHead>
-                <TableHead>Usage</TableHead>
-                <TableHead>Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {filteredBilling.map((bill) => (
-                <TableRow key={bill.id}>
-                  <TableCell>
-                    <div className="flex items-center gap-3">
-                      <div className="h-8 w-8 rounded-full bg-gray-200 flex items-center justify-center">
-                        <Building2 className="h-4 w-4" />
-                      </div>
-                      <div>
-                        <div className="font-medium">{bill.clientName}</div>
-                        <div className="text-sm text-gray-600">{bill.description}</div>
-                      </div>
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    <div className="font-medium">{bill.invoiceNumber}</div>
-                  </TableCell>
-                  <TableCell>
-                    <div className="font-medium">${bill.amount.toLocaleString()}</div>
-                  </TableCell>
-                  <TableCell>
-                    <Badge variant={getStatusBadgeVariant(bill.status)}>
-                      {getStatusIcon(bill.status)}
-                      <span className="ml-1 capitalize">{bill.status}</span>
-                    </Badge>
-                  </TableCell>
-                  <TableCell>
-                    <div className="text-sm flex items-center gap-1">
-                      <Calendar className="h-3 w-3" />
-                      {bill.dueDate.toLocaleDateString()}
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    <div className="text-sm">{bill.period}</div>
-                  </TableCell>
-                  <TableCell>
-                    <div className="text-sm">
-                      <div>{bill.workflows} workflows</div>
-                      <div className="text-gray-600">{bill.executions.toLocaleString()} executions</div>
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex items-center gap-2">
-                      <Button variant="ghost" size="sm">
-                        <Eye className="h-4 w-4" />
-                      </Button>
-                      <Button variant="ghost" size="sm">
-                        <Edit className="h-4 w-4" />
-                      </Button>
-                      <Button variant="ghost" size="sm">
-                        <MoreHorizontal className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </TableCell>
-                </TableRow>
+           {/* SE Hours Card */}
+           <Card>
+             <CardContent className="pt-6">
+               <div className="text-center">
+                 <div className="text-sm font-medium text-gray-600 mb-2">SE Hours This Month</div>
+                 <div className="text-2xl font-bold text-gray-900 mb-1">12.5 / 20</div>
+                 <div className="text-sm text-gray-500">7.5 hours remaining</div>
+               </div>
+             </CardContent>
+           </Card>
+         </div>
+       </div>
+
+       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+         {/* Left Column */}
+         <div className="space-y-6">
+
+          {/* Usage Summary */}
+          <Card>
+            <CardHeader className="pb-4">
+              <div className="flex justify-between items-center">
+                <CardTitle className="text-lg font-semibold">Usage Summary</CardTitle>
+                <Button variant="link" className="text-blue-600 p-0 h-auto">
+                  View detailed report →
+                </Button>
+              </div>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              <div className="flex justify-between items-center py-2">
+                <span className="text-gray-700">API Calls</span>
+                <span className="font-medium">245,678</span>
+              </div>
+              <div className="flex justify-between items-center py-2">
+                <span className="text-gray-700">Storage Used</span>
+                <span className="font-medium">1.2 TB</span>
+              </div>
+              <div className="flex justify-between items-center py-2">
+                <span className="text-gray-700">Active Users</span>
+                <span className="font-medium">127</span>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Billing Actions */}
+          <Card>
+            <CardHeader className="pb-4">
+              <div className="flex justify-between items-center">
+                <CardTitle className="text-lg font-semibold">Billing Actions</CardTitle>
+              </div>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div>
+                <h4 className="font-medium text-gray-900 mb-3">Payment Method</h4>
+                <div className="bg-white border rounded-lg p-4 flex items-center gap-3">
+                  <div className="h-8 w-12 bg-blue-600 rounded flex items-center justify-center">
+                    <span className="text-white text-xs font-bold">VISA</span>
+                  </div>
+                  <div>
+                    <div className="font-medium">Visa ending in 4242</div>
+                    <div className="text-sm text-gray-600">Expires 12/25</div>
+                  </div>
+                </div>
+                <Button variant="link" className="text-blue-600 p-0 h-auto mt-2">
+                  Update payment method
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Right Column */}
+        <div className="space-y-6">
+          {/* Recent Invoices */}
+          <Card>
+            <CardHeader className="pb-4">
+              <CardTitle className="text-lg font-semibold">Recent Invoices</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {mockAdminBillingData.recentInvoices.map((invoice) => (
+                <div key={invoice.id} className="flex items-center justify-between py-3 border-b last:border-b-0">
+                  <div>
+                    <div className="font-medium text-gray-900">{invoice.month}</div>
+                    <div className="text-sm text-gray-600">{invoice.invoiceNumber}</div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="font-medium">${invoice.amount.toFixed(2)}</span>
+                    <Button variant="ghost" size="sm" className="h-6 w-6 p-0">
+                      <Download className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </div>
               ))}
-            </TableBody>
-          </Table>
-        </CardContent>
-      </Card>
+              <Button variant="link" className="text-blue-600 p-0 h-auto">
+                View all invoices →
+              </Button>
+            </CardContent>
+          </Card>
 
-      {/* Recent Activity */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <Card>
-          <CardHeader>
-            <CardTitle>Recent Payments</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              {mockBillingData
-                .filter(bill => bill.status === 'paid')
-                .slice(0, 5)
-                .map((bill) => (
-                  <div key={bill.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                    <div>
-                      <div className="font-medium">{bill.clientName}</div>
-                      <div className="text-sm text-gray-600">{bill.invoiceNumber}</div>
-                    </div>
-                    <div className="text-right">
-                      <div className="font-medium text-green-600">${bill.amount.toLocaleString()}</div>
-                      <div className="text-sm text-gray-600">
-                        {bill.paidDate?.toLocaleDateString()}
-                      </div>
-                    </div>
-                  </div>
-                ))}
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle>Overdue Invoices</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              {mockBillingData
-                .filter(bill => bill.status === 'overdue')
-                .slice(0, 5)
-                .map((bill) => (
-                  <div key={bill.id} className="flex items-center justify-between p-3 bg-red-50 rounded-lg">
-                    <div>
-                      <div className="font-medium">{bill.clientName}</div>
-                      <div className="text-sm text-gray-600">{bill.invoiceNumber}</div>
-                    </div>
-                    <div className="text-right">
-                      <div className="font-medium text-red-600">${bill.amount.toLocaleString()}</div>
-                      <div className="text-sm text-gray-600">
-                        Due: {bill.dueDate.toLocaleDateString()}
-                      </div>
-                    </div>
-                  </div>
-                ))}
-            </div>
-          </CardContent>
-        </Card>
+          {/* Need Help? */}
+          <Card>
+            <CardHeader className="pb-4">
+              <CardTitle className="text-lg font-semibold">Need Help?</CardTitle>
+            </CardHeader>
+                         <CardContent className="space-y-3">
+               <Button variant="outline" className="w-full justify-start">
+                 Download Contract
+               </Button>
+               <Button className="w-full justify-center">
+                 Contact Support
+               </Button>
+             </CardContent>
+          </Card>
+        </div>
       </div>
     </div>
   )

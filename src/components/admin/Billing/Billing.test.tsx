@@ -1,6 +1,5 @@
 import { describe, it, expect, vi } from 'vitest'
 import { screen } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
 import { render, mockAdminUser } from '@/test/utils'
 import { Billing } from './Billing'
 
@@ -43,101 +42,106 @@ vi.mock('@/data/mockData', () => ({
 }))
 
 describe('Billing', () => {
-  it('renders billing management page', () => {
+  it('renders billing overview page', () => {
     render(<Billing />, { user: mockAdminUser })
     
-    expect(screen.getByText('Billing Management')).toBeInTheDocument()
-    expect(screen.getByText('Create Invoice')).toBeInTheDocument()
-    expect(screen.getByText('Export')).toBeInTheDocument()
+    expect(screen.getByText('Billing Overview')).toBeInTheDocument()
   })
 
-  it('displays summary cards with correct data', () => {
+  it('displays billing overview cards with correct data', () => {
     render(<Billing />, { user: mockAdminUser })
     
-    expect(screen.getByText('Total Revenue')).toBeInTheDocument()
-    expect(screen.getByText('Pending Amount')).toBeInTheDocument()
-    expect(screen.getByText('Overdue Amount')).toBeInTheDocument()
-    expect(screen.getByText('Total Invoices')).toBeInTheDocument()
+    // Current Plan card
+    expect(screen.getByText('Current Plan')).toBeInTheDocument()
+    expect(screen.getByText('Enterprise')).toBeInTheDocument()
+    expect(screen.getByText('$2,000/month base fee')).toBeInTheDocument()
+    
+    // Credits Remaining card
+    expect(screen.getByText('Credits Remaining')).toBeInTheDocument()
+    expect(screen.getByText('8,450')).toBeInTheDocument()
+    expect(screen.getByText('Renews on May 1, 2025')).toBeInTheDocument()
+    
+    // SE Hours card
+    expect(screen.getByText('SE Hours This Month')).toBeInTheDocument()
+    expect(screen.getByText('12.5 / 20')).toBeInTheDocument()
+    expect(screen.getByText('7.5 hours remaining')).toBeInTheDocument()
   })
 
-  it('displays billing table with invoices', () => {
+  it('displays usage summary section', () => {
     render(<Billing />, { user: mockAdminUser })
     
-    expect(screen.getByText('Invoices (4)')).toBeInTheDocument()
-    expect(screen.getAllByText('Acme Corporation')).toHaveLength(4) // Table + dropdown + recent payments + overdue
-    expect(screen.getAllByText('Global Industries')).toHaveLength(2) // Table + dropdown
-    expect(screen.getAllByText('TechStart Inc')).toHaveLength(2) // Table + overdue section
+    expect(screen.getByText('Usage Summary')).toBeInTheDocument()
+    expect(screen.getByText('View detailed report →')).toBeInTheDocument()
+    expect(screen.getByText('API Calls')).toBeInTheDocument()
+    expect(screen.getByText('245,678')).toBeInTheDocument()
+    expect(screen.getByText('Storage Used')).toBeInTheDocument()
+    expect(screen.getByText('1.2 TB')).toBeInTheDocument()
+    expect(screen.getByText('Active Users')).toBeInTheDocument()
+    expect(screen.getByText('127')).toBeInTheDocument()
   })
 
-  it('filters invoices by search term', async () => {
-    const user = userEvent.setup()
+  it('displays recent invoices section', () => {
     render(<Billing />, { user: mockAdminUser })
     
-    const searchInput = screen.getByPlaceholderText('Search invoices or clients...')
-    await user.type(searchInput, 'Acme')
+    expect(screen.getByText('Recent Invoices')).toBeInTheDocument()
+    expect(screen.getByText('View all invoices →')).toBeInTheDocument()
     
-    expect(screen.getAllByText('Acme Corporation')).toHaveLength(4) // Table + dropdown + recent payments + overdue
-    // Note: Search doesn't filter dropdown options, so Global Industries still appears in dropdown
-    expect(screen.getAllByText('Global Industries')).toHaveLength(1) // Only in dropdown
+    // Check for invoice entries
+    expect(screen.getByText('April 2025')).toBeInTheDocument()
+    expect(screen.getByText('Invoice #2025-04')).toBeInTheDocument()
+    
+    expect(screen.getByText('March 2025')).toBeInTheDocument()
+    expect(screen.getByText('Invoice #2025-03')).toBeInTheDocument()
+    
+    expect(screen.getByText('February 2025')).toBeInTheDocument()
+    expect(screen.getByText('Invoice #2025-02')).toBeInTheDocument()
   })
 
-  it('filters invoices by status', async () => {
-    const user = userEvent.setup()
+  it('displays billing actions section', () => {
     render(<Billing />, { user: mockAdminUser })
     
-    const statusSelect = screen.getByDisplayValue('All Status')
-    await user.selectOptions(statusSelect, 'paid')
-    
-    // Should show paid invoices - only Acme Corporation has paid invoices
-    expect(screen.getAllByText('Acme Corporation')).toHaveLength(3) // Table + dropdown + recent payments (no overdue)
+    expect(screen.getByText('Billing Actions')).toBeInTheDocument()
+    expect(screen.getByText('Payment Method')).toBeInTheDocument()
+    expect(screen.getByText('Visa ending in 4242')).toBeInTheDocument()
+    expect(screen.getByText('Expires 12/25')).toBeInTheDocument()
+    expect(screen.getByText('Update payment method')).toBeInTheDocument()
   })
 
-  it('filters invoices by client', async () => {
-    const user = userEvent.setup()
+  it('displays need help section', () => {
     render(<Billing />, { user: mockAdminUser })
     
-    const clientSelect = screen.getByDisplayValue('All Clients')
-    await user.selectOptions(clientSelect, 'client-1')
-    
-    // Should show only Acme Corporation invoices
-    expect(screen.getAllByText('Acme Corporation')).toHaveLength(4) // Table + dropdown + recent payments + overdue
-    // Note: Client filter doesn't filter dropdown options, so Global Industries still appears in dropdown
-    expect(screen.getAllByText('Global Industries')).toHaveLength(1) // Only in dropdown
+    expect(screen.getByText('Need Help?')).toBeInTheDocument()
+    expect(screen.getByText('Download Contract')).toBeInTheDocument()
+    expect(screen.getByText('Contact Support')).toBeInTheDocument()
   })
 
-  it('displays recent payments section', () => {
+  it('shows download buttons for invoices', () => {
     render(<Billing />, { user: mockAdminUser })
     
-    expect(screen.getByText('Recent Payments')).toBeInTheDocument()
+    // Check for download buttons (should be 3 for the 3 recent invoices)
+    const downloadButtons = screen.getAllByRole('button').filter(button => 
+      button.querySelector('svg') // Download icon
+    )
+    expect(downloadButtons.length).toBeGreaterThan(0)
   })
 
-  it('displays overdue invoices section', () => {
+  it('displays visa card mockup correctly', () => {
     render(<Billing />, { user: mockAdminUser })
     
-    expect(screen.getByText('Overdue Invoices')).toBeInTheDocument()
+    expect(screen.getByText('VISA')).toBeInTheDocument()
+    expect(screen.getByText('Visa ending in 4242')).toBeInTheDocument()
+    expect(screen.getByText('Expires 12/25')).toBeInTheDocument()
   })
 
-  it('shows correct invoice details', () => {
+  it('shows action buttons with correct styling', () => {
     render(<Billing />, { user: mockAdminUser })
     
-    expect(screen.getAllByText('INV-2024-001')).toHaveLength(2) // Table + recent payments
-    expect(screen.getAllByText('$45,000')).toHaveLength(4) // Summary card + table + recent payments + overdue
-    expect(screen.getAllByText('December 2024')).toHaveLength(3) // Multiple invoices have December 2024 period
-  })
-
-  it('displays status badges correctly', () => {
-    render(<Billing />, { user: mockAdminUser })
+    // Check for Download Contract button (outline style)
+    const downloadContractButton = screen.getByText('Download Contract')
+    expect(downloadContractButton).toBeInTheDocument()
     
-    expect(screen.getByText('paid')).toBeInTheDocument()
-    expect(screen.getByText('pending')).toBeInTheDocument()
-    expect(screen.getByText('overdue')).toBeInTheDocument()
-  })
-
-  it('shows action buttons for each invoice', () => {
-    render(<Billing />, { user: mockAdminUser })
-    
-    // Check for action buttons (Eye, Edit, MoreHorizontal icons)
-    const actionButtons = screen.getAllByRole('button')
-    expect(actionButtons.length).toBeGreaterThan(0)
+    // Check for Contact Support button (filled style)
+    const contactSupportButton = screen.getByText('Contact Support')
+    expect(contactSupportButton).toBeInTheDocument()
   })
 }) 
