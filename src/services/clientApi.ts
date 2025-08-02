@@ -192,8 +192,8 @@ export class ClientApiService {
       updatedAt: new Date()
     }
 
-    // In a real app, this would save to the database
-    // mockClients.push(newClient)
+    // Add to mockClients to update the data
+    mockClients.push(newClient)
 
     return {
       data: newClient,

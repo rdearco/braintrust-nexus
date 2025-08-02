@@ -1,10 +1,13 @@
-import { useState } from 'react'
+import { useState, useRef } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Card, CardContent } from '@/components/ui/card'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Plus, Trash2 } from 'lucide-react'
+import { clientApi } from '@/services/clientApi'
+import type { Client } from '@/types'
 
 interface Department {
   id: string
@@ -30,11 +33,16 @@ interface SolutionsEngineer {
 }
 
 export function ClientManagement() {
+  const navigate = useNavigate()
   const [companyName, setCompanyName] = useState('')
   const [companyUrl, setCompanyUrl] = useState('https://')
   const [departments, setDepartments] = useState<Department[]>([])
   const [users, setUsers] = useState<User[]>([])
   const [solutionsEngineers, setSolutionsEngineers] = useState<SolutionsEngineer[]>([])
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [formError, setFormError] = useState<string>('')
+  const [successMessage, setSuccessMessage] = useState<string>('')
+  const errorMessageRef = useRef<HTMLDivElement>(null)
 
   const addDepartment = () => {
     setDepartments([...departments, {
@@ -89,9 +97,87 @@ export function ClientManagement() {
     setSolutionsEngineers(solutionsEngineers.filter(se => se.id !== id))
   }
 
+  const handleCreateClient = async () => {
+    // Clear previous messages
+    setFormError('')
+    setSuccessMessage('')
+
+    if (!companyName.trim() || !companyUrl.trim()) {
+      setFormError('Please fill in required fields: Company Name and Company URL')
+      // Scroll to error message after it's rendered
+      setTimeout(() => {
+        errorMessageRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+      }, 100)
+      return
+    }
+
+    setIsSubmitting(true)
+    
+    try {
+      const clientData: Omit<Client, 'id' | 'createdAt' | 'updatedAt'> = {
+        name: companyName.trim(),
+        url: companyUrl.trim(),
+        contractStartDate: new Date(),
+        totalWorkflows: 0,
+        totalNodes: 0,
+        executions: 0,
+        exceptions: 0,
+        totalRevenue: 0,
+        timeSaved: 0,
+        moneySaved: 0,
+        departments: departments
+          .filter(dept => dept.name.trim())
+          .map(dept => ({
+            id: dept.id,
+            name: dept.name.trim(),
+            clientId: '', // Will be set by the API
+            workflows: []
+          }))
+      }
+
+      const response = await clientApi.create(clientData)
+      
+      if (response.success) {
+        setSuccessMessage('Client created successfully!')
+        // Navigate after a short delay to show the success message
+        setTimeout(() => {
+          navigate('/admin/clients')
+        }, 1500)
+      } else {
+        setFormError(response.error || 'Failed to create client')
+        // Scroll to error message after it's rendered
+        setTimeout(() => {
+          errorMessageRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+        }, 100)
+      }
+    } catch (error) {
+      console.error('Error creating client:', error)
+      setFormError('An unexpected error occurred while creating the client')
+      // Scroll to error message after it's rendered
+      setTimeout(() => {
+        errorMessageRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+      }, 100)
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
+
   return (
     <div className="p-6 space-y-6 max-w-6xl">
       <h1 className="text-2xl font-bold">Add New Client</h1>
+      
+      {/* Error and Success Messages */}
+      {formError && (
+        <div ref={errorMessageRef} className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">
+          {formError}
+        </div>
+      )}
+      
+      {successMessage && (
+        <div className="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded">
+          {successMessage}
+        </div>
+      )}
       
       <div className="space-y-6">
         {/* Company Information and Manage Departments */}
@@ -351,11 +437,15 @@ export function ClientManagement() {
 
       {/* Action Buttons */}
       <div className="flex justify-end gap-4 pt-6">
-        <Button variant="outline">
+        <Button variant="outline" onClick={() => navigate('/admin/clients')}>
           Cancel
         </Button>
-        <Button className="bg-black hover:bg-gray-800 text-white">
-          Create Client
+        <Button 
+          className="bg-black hover:bg-gray-800 text-white"
+          onClick={handleCreateClient}
+          disabled={isSubmitting}
+        >
+          {isSubmitting ? 'Creating...' : 'Create Client'}
         </Button>
       </div>
     </div>
