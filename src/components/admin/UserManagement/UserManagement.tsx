@@ -16,20 +16,27 @@ import {
   Trash2,
   UserCheck,
 } from 'lucide-react'
-import { mockUsers, mockClients } from '@/data/mockData'
+import { useUsers, useUserStats } from '@/hooks/useUsers'
+import { useClients } from '@/hooks/useClients'
 import type { User as UserType } from '@/types'
 
 export function UserManagement() {
-  const [searchTerm, setSearchTerm] = useState('')
   const [showAddUserForm, setShowAddUserForm] = useState(false)
   const [selectedRole, setSelectedRole] = useState<string>('all')
 
-  const filteredUsers = mockUsers.filter(user => {
-    const matchesSearch = user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         user.email.toLowerCase().includes(searchTerm.toLowerCase())
-    const matchesRole = selectedRole === 'all' || user.role === selectedRole
-    return matchesSearch && matchesRole
+  // Use userApi to get users data
+  const { users, loading: usersLoading, error: usersError, updateSearch, updateRole } = useUsers({ 
+    limit: 1000, // Get all users
+    role: selectedRole
   })
+  
+  // Use clientApi to get clients data  
+  const { clients } = useClients({ limit: 1000 }) // Get all clients
+
+  // Use userStats hook for statistics
+  const { stats } = useUserStats()
+
+  const filteredUsers = users
 
   const getRoleBadgeVariant = (role: UserType['role']) => {
     switch (role) {
@@ -48,16 +55,49 @@ export function UserManagement() {
     if (user.role === 'admin') return 'All clients'
     if (user.role === 'se' && user.assignedClients) {
       const clientNames = user.assignedClients.map(clientId => {
-        const client = mockClients.find(c => c.id === clientId)
+        const client = clients.find(c => c.id === clientId)
         return client ? client.name : clientId
       })
       return clientNames.join(', ')
     }
     if (user.role === 'client' && user.companyId) {
-      const client = mockClients.find(c => c.id === user.companyId)
+      const client = clients.find(c => c.id === user.companyId)
       return client ? client.name : user.companyId
     }
     return 'None'
+  }
+
+  const handleRoleFilter = (role: string) => {
+    setSelectedRole(role)
+    updateRole(role)
+  }
+
+  // Show loading state
+  if (usersLoading) {
+    return (
+      <div className="p-6 space-y-6">
+        <div className="flex justify-between items-center">
+          <h1 className="text-3xl font-bold">User Management</h1>
+        </div>
+        <div className="flex items-center justify-center h-64">
+          <div className="text-lg">Loading users...</div>
+        </div>
+      </div>
+    )
+  }
+
+  // Show error state
+  if (usersError) {
+    return (
+      <div className="p-6 space-y-6">
+        <div className="flex justify-between items-center">
+          <h1 className="text-3xl font-bold">User Management</h1>
+        </div>
+        <div className="flex items-center justify-center h-64">
+          <div className="text-lg text-red-600">Error loading users: {usersError}</div>
+        </div>
+      </div>
+    )
   }
 
   return (
@@ -76,8 +116,7 @@ export function UserManagement() {
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
           <Input
             placeholder="Search users..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
+            onChange={(e) => updateSearch(e.target.value)}
             className="pl-10"
           />
         </div>
@@ -85,28 +124,28 @@ export function UserManagement() {
           <Button
             variant={selectedRole === 'all' ? 'default' : 'outline'}
             size="sm"
-            onClick={() => setSelectedRole('all')}
+            onClick={() => handleRoleFilter('all')}
           >
             All
           </Button>
           <Button
             variant={selectedRole === 'admin' ? 'default' : 'outline'}
             size="sm"
-            onClick={() => setSelectedRole('admin')}
+            onClick={() => handleRoleFilter('admin')}
           >
             Admins
           </Button>
           <Button
             variant={selectedRole === 'se' ? 'default' : 'outline'}
             size="sm"
-            onClick={() => setSelectedRole('se')}
+            onClick={() => handleRoleFilter('se')}
           >
             SEs
           </Button>
           <Button
             variant={selectedRole === 'client' ? 'default' : 'outline'}
             size="sm"
-            onClick={() => setSelectedRole('client')}
+            onClick={() => handleRoleFilter('client')}
           >
             Clients
           </Button>
@@ -244,7 +283,7 @@ export function UserManagement() {
           <CardContent className="pt-6">
             <div className="text-center">
               <div className="text-2xl font-bold text-red-600">
-                {mockUsers.filter(u => u.role === 'admin').length}
+                {stats?.totalAdmins || 0}
               </div>
               <div className="text-sm font-medium text-gray-600">Admins</div>
             </div>
@@ -254,7 +293,7 @@ export function UserManagement() {
           <CardContent className="pt-6">
             <div className="text-center">
               <div className="text-2xl font-bold text-blue-600">
-                {mockUsers.filter(u => u.role === 'se').length}
+                {stats?.totalSEs || 0}
               </div>
               <div className="text-sm font-medium text-gray-600">Solutions Engineers</div>
             </div>
@@ -264,7 +303,7 @@ export function UserManagement() {
           <CardContent className="pt-6">
             <div className="text-center">
               <div className="text-2xl font-bold text-green-600">
-                {mockUsers.filter(u => u.role === 'client').length}
+                {stats?.totalClients || 0}
               </div>
               <div className="text-sm font-medium text-gray-600">Client Users</div>
             </div>
@@ -273,7 +312,7 @@ export function UserManagement() {
         <Card>
           <CardContent className="pt-6">
             <div className="text-center">
-              <div className="text-2xl font-bold">{mockUsers.length}</div>
+              <div className="text-2xl font-bold">{stats?.totalUsers || 0}</div>
               <div className="text-sm font-medium text-gray-600">Total Users</div>
             </div>
           </CardContent>

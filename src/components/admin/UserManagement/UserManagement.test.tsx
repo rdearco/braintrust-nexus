@@ -4,42 +4,76 @@ import userEvent from '@testing-library/user-event'
 import { render, mockAdminUser } from '@/test/utils'
 import { UserManagement } from './UserManagement'
 
-// Mock the data
-vi.mock('@/data/mockData', () => ({
-  mockUsers: [
-    {
-      id: '1',
-      email: 'admin@usebraintrust.com',
-      name: 'Admin User',
-      role: 'admin',
-      createdAt: new Date('2024-01-01'),
-      updatedAt: new Date('2024-12-01'),
+// Mock the useUsers hook
+vi.mock('@/hooks/useUsers', () => ({
+  useUsers: vi.fn(() => ({
+    users: [
+      {
+        id: '1',
+        email: 'admin@usebraintrust.com',
+        name: 'Admin User',
+        role: 'admin',
+        createdAt: new Date('2024-01-01'),
+        updatedAt: new Date('2024-12-01'),
+      },
+      {
+        id: '2',
+        email: 'se@contractor.com',
+        name: 'Solutions Engineer',
+        role: 'se',
+        assignedClients: ['client-1', 'client-2'],
+        createdAt: new Date('2024-01-15'),
+        updatedAt: new Date('2024-12-01'),
+      },
+      {
+        id: '3',
+        email: 'client@company.com',
+        name: 'Client User',
+        role: 'client',
+        companyId: 'client-1',
+        createdAt: new Date('2024-02-01'),
+        updatedAt: new Date('2024-12-01'),
+      }
+    ],
+    loading: false,
+    error: null,
+    pagination: null,
+    refetch: vi.fn(),
+    updateSearch: vi.fn(),
+    updateRole: vi.fn(),
+    updateSort: vi.fn(),
+    updatePage: vi.fn()
+  })),
+  useUserStats: vi.fn(() => ({
+    stats: {
+      totalUsers: 3,
+      totalAdmins: 1,
+      totalSEs: 1,
+      totalClients: 1
     },
-    {
-      id: '2',
-      email: 'se@contractor.com',
-      name: 'Solutions Engineer',
-      role: 'se',
-      assignedClients: ['client-1', 'client-2'],
-      createdAt: new Date('2024-01-15'),
-      updatedAt: new Date('2024-12-01'),
-    },
-    {
-      id: '3',
-      email: 'client@company.com',
-      name: 'Client User',
-      role: 'client',
-      companyId: 'client-1',
-      createdAt: new Date('2024-02-01'),
-      updatedAt: new Date('2024-12-01'),
-    }
-  ],
-  mockClients: [
-    {
-      id: 'client-1',
-      name: 'Acme Corporation',
-    }
-  ]
+    loading: false,
+    error: null,
+    refetch: vi.fn()
+  }))
+}))
+
+// Mock the useClients hook
+vi.mock('@/hooks/useClients', () => ({
+  useClients: vi.fn(() => ({
+    clients: [
+      {
+        id: 'client-1',
+        name: 'Acme Corporation',
+      }
+    ],
+    loading: false,
+    error: null,
+    pagination: null,
+    refetch: vi.fn(),
+    updateSearch: vi.fn(),
+    updateSort: vi.fn(),
+    updatePage: vi.fn()
+  }))
 }))
 
 describe('UserManagement', () => {

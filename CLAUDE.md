@@ -82,12 +82,58 @@ npm run lint
 npm run test
 ```
 
+## API Services & Data Management
+
+### Service Layer Architecture
+The project uses a service layer pattern with mock API services that simulate real backend interactions:
+
+- **clientApi** (`src/services/clientApi.ts`): Handles all client-related operations
+  - Get all clients with pagination, filtering, and sorting
+  - Get individual client details
+  - Create, update, and delete clients
+  - Get dashboard metrics aggregated from client data
+
+- **userApi** (`src/services/userApi.ts`): Handles all user management operations
+  - Get all users with pagination, role filtering, and search
+  - Get individual user details
+  - Create, update, and delete users
+  - Get user statistics by role
+
+### Custom Hooks
+React hooks provide clean integration between components and API services:
+
+- **useClients** (`src/hooks/useClients.ts`): Client data management
+  - Pagination, search, and sorting state management
+  - Loading and error states
+  - Dashboard metrics hook
+
+- **useUsers** (`src/hooks/useUsers.ts`): User data management
+  - Role filtering and search functionality
+  - User statistics hook
+  - Individual user data hook
+
+### Testing Strategy
+- Comprehensive unit tests for all API services
+- Component tests mock the service hooks for isolation
+- Test files follow the pattern: `*.test.ts` for services, `*.test.tsx` for components
+
 ## Project Structure
 ```
 /
-├── admin/          # Admin application
-├── client/         # Client application  
-├── shared/         # Shared components and utilities
-├── database/       # Database schema and migrations
-└── types/          # Shared TypeScript definitions
+├── src/
+│   ├── components/
+│   │   ├── admin/          # Admin-specific components
+│   │   ├── client/         # Client-specific components
+│   │   ├── shared/         # Shared components
+│   │   └── ui/            # shadcn/ui components
+│   ├── hooks/             # Custom React hooks
+│   ├── services/          # API service layer
+│   ├── data/              # Mock data definitions
+│   ├── types/             # TypeScript type definitions
+│   └── test/              # Test utilities and setup
+├── admin/                 # Admin application
+├── client/                # Client application  
+├── shared/                # Shared components and utilities
+├── database/              # Database schema and migrations
+└── types/                 # Shared TypeScript definitions
 ```

@@ -8,7 +8,7 @@ You are working on the Braintrust Nexus platform - an admin application with two
 - **Build Tool**: Vite
 - **Routing**: React Router v6
 - **UI Framework**: shadcn/ui components with Tailwind CSS
-- **API**: tRPC for type-safe endpoints
+- **API Layer**: Mock API services with hooks (clientApi, userApi)
 - **Testing**: Vitest with React Testing Library
 - **Authentication**: Google OAuth2 (Admin) and internal auth with 2FA (Client)
 
@@ -36,15 +36,16 @@ You are working on the Braintrust Nexus platform - an admin application with two
   ├── components/
   │   ├── admin/        # Admin-specific components
   │   ├── client/       # Client-specific components
-  │   ├── layout/       # Shared layout components
+  │   ├── shared/       # Shared components
   │   └── ui/          # shadcn/ui components
-  ├── contexts/        # React contexts
-  ├── hooks/           # Custom hooks
-  ├── lib/             # Utilities and configurations
+  ├── hooks/           # Custom React hooks (useClients, useUsers)
+  ├── services/        # API service layer (clientApi, userApi)
+  ├── data/            # Mock data definitions
   ├── types/           # TypeScript type definitions
-  └── data/            # Mock data and constants
+  ├── test/            # Test utilities and setup
+  └── lib/             # Utilities and configurations
   ```
-- Create separate test files (.test.tsx) for each component
+- Create separate test files (.test.tsx/.test.ts) for each component/service
 - Use index.ts files for clean imports
 - Keep components focused and single-responsibility
 
@@ -64,11 +65,37 @@ You are working on the Braintrust Nexus platform - an admin application with two
 - Use consistent styling patterns with Tailwind CSS
 - Create reusable components when patterns emerge
 
+### API Service Layer
+- Use the established service pattern (clientApi, userApi) for all data operations
+- Never import mockData directly in components - always go through service layer
+- Implement proper pagination, filtering, and sorting in services
+- Use custom hooks (useClients, useUsers) to integrate services with components
+- Follow this pattern for new services:
+  ```typescript
+  // Service class with static methods
+  export class ServiceApiService {
+    static async getAll(params?) { /* implementation */ }
+    static async getById(id) { /* implementation */ }
+    static async create(data) { /* implementation */ }
+    static async update(id, data) { /* implementation */ }
+    static async delete(id) { /* implementation */ }
+  }
+  
+  // Convenience export
+  export const serviceApi = {
+    getAll: ServiceApiService.getAll,
+    getById: ServiceApiService.getById,
+    // ... etc
+  }
+  ```
+
 ### Testing Requirements
-- Write comprehensive unit tests for all components
-- Use React Testing Library best practices
-- Test user interactions and edge cases
-- Mock external dependencies properly
+- Write comprehensive unit tests for all components AND services
+- Use React Testing Library best practices for component tests
+- Test all API service methods with proper mocking
+- Mock service hooks in component tests for isolation
+- Test user interactions, edge cases, loading and error states
+- Follow naming: `*.test.ts` for services, `*.test.tsx` for components
 - Maintain high test coverage
 - Run tests before committing changes
 
@@ -113,8 +140,9 @@ You are working on the Braintrust Nexus platform - an admin application with two
 import React from 'react'
 import { useState, useEffect } from 'react'
 
-// 2. Internal hooks and contexts
-import { useAuth } from '@/contexts/AuthContext'
+// 2. Custom hooks and services
+import { useUsers, useClients } from '@/hooks/useUsers'
+import { userApi } from '@/services/userApi'
 
 // 3. UI components
 import { Button } from '@/components/ui/button'
@@ -124,7 +152,7 @@ import { Card } from '@/components/ui/card'
 import { UserList } from './UserList'
 
 // 5. Types and interfaces
-import type { User } from '@/types/User'
+import type { User } from '@/types'
 
 // 6. Utils and constants
 import { formatDate } from '@/lib/utils'
@@ -155,13 +183,40 @@ npm run test       # Run tests
 
 ## Common Anti-Patterns to Avoid
 - Using `any` type in TypeScript
+- Directly importing mockData in components (use service layer)
 - Directly mutating state
 - Missing dependency arrays in useEffect
 - Inline styles instead of Tailwind classes
 - Not handling loading and error states
 - Missing proper TypeScript interfaces
 - Inconsistent component organization
-- Not following established patterns
+- Not following established service/hook patterns
+- Not mocking hooks properly in tests
+
+## Project-Specific Patterns
+
+### Data Flow Architecture
+```
+mockData → API Service → Custom Hook → Component
+```
+
+### Service Layer Pattern
+- All data access goes through services (clientApi, userApi)
+- Services simulate API delays with `simulateApiDelay()`
+- Services return standardized `ApiResponse<T>` or `PaginatedResponse<T>`
+- Services handle filtering, pagination, and sorting
+
+### Hook Pattern
+- Custom hooks manage state and API integration
+- Hooks provide loading, error, and data states
+- Hooks offer methods for updating filters/search/pagination
+- Multiple specialized hooks per service (e.g., useUsers, useUserStats)
+
+### Component Integration
+- Components use hooks, never call services directly
+- Always handle loading and error states from hooks
+- Use hook methods for user interactions (updateSearch, updateRole, etc.)
+- Mock hooks in tests, not services
 
 ## When Making Changes
 1. Always check existing similar components first

@@ -14,9 +14,9 @@ import {
   Plus,
   ArrowUpDown
 } from 'lucide-react'
-import { mockDashboardMetrics, mockClients } from '@/data/mockData'
 import type { TimeFilter } from '@/types'
 import { Link } from 'react-router-dom'
+import { useClients, useDashboardMetrics } from '@/hooks/useClients'
 
 const timeFilters: TimeFilter[] = [
   { label: 'Last 7 days', value: '7d' },
@@ -32,12 +32,14 @@ export function AdminDashboard() {
   const [sortField, setSortField] = useState<string>('')
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc')
 
-  const metrics = mockDashboardMetrics
-
-  const calculatePercentageChange = (current: number, previous: number) => {
-    if (previous === 0) return 0
-    return ((current - previous) / previous) * 100
-  }
+  // Use API hooks instead of direct mock data
+  const { clients, loading: _, error: clientsError, updateSort } = useClients({
+    limit: 50, // Show more clients on dashboard
+    sortBy: sortField,
+    sortOrder: sortDirection
+  })
+  
+  const { metrics, loading: metricsLoading, error: metricsError } = useDashboardMetrics()
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('en-US', {
@@ -53,66 +55,62 @@ export function AdminDashboard() {
 
   const handleSort = (field: string) => {
     if (sortField === field) {
-      setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc')
+      const newDirection = sortDirection === 'asc' ? 'desc' : 'asc'
+      setSortDirection(newDirection)
+      updateSort(field, newDirection)
     } else {
       setSortField(field)
       setSortDirection('asc')
+      updateSort(field, 'asc')
     }
   }
 
-  const sortedClients = [...mockClients].sort((a, b) => {
-    if (!sortField) return 0
-    
-    let aValue: any
-    let bValue: any
-    
-    switch (sortField) {
-      case 'name':
-        aValue = a.name
-        bValue = b.name
-        break
-      case 'contractStartDate':
-        aValue = a.contractStartDate
-        bValue = b.contractStartDate
-        break
-      case 'totalWorkflows':
-        aValue = a.totalWorkflows
-        bValue = b.totalWorkflows
-        break
-      case 'totalNodes':
-        aValue = a.totalNodes
-        bValue = b.totalNodes
-        break
-      case 'executions':
-        aValue = a.executions
-        bValue = b.executions
-        break
-      case 'exceptions':
-        aValue = a.exceptions
-        bValue = b.exceptions
-        break
-      case 'totalRevenue':
-        aValue = a.totalRevenue
-        bValue = b.totalRevenue
-        break
-      case 'timeSaved':
-        aValue = a.timeSaved
-        bValue = b.timeSaved
-        break
-      case 'moneySaved':
-        aValue = a.moneySaved
-        bValue = b.moneySaved
-        break
-      default:
-        return 0
-    }
+  // Show loading states//
+  if (metricsLoading) {
+    return (
+      <div className="p-6 space-y-6">
+        <div className="flex justify-between items-center">
+          <h1 className="text-3xl font-bold">Dashboard Overview</h1>
+        </div>
+        <div className="flex items-center justify-center h-64">
+          <div className="text-lg">Loading dashboard data...</div>
+        </div>
+      </div>
+    )
+  }
 
-    if (sortDirection === 'asc') {
-      return aValue < bValue ? -1 : aValue > bValue ? 1 : 0
-    } else {
-      return aValue > bValue ? -1 : aValue < bValue ? 1 : 0
-    }
-  })
+  // Show error states
+  if (metricsError || clientsError) {
+    return (
+      <div className="p-6 space-y-6">
+        <div className="flex justify-between items-center">
+          <h1 className="text-3xl font-bold">Dashboard Overview</h1>
+        </div>
+        <div className="flex items-center justify-center h-64">
+          <div className="text-lg text-red-600">
+            Error loading dashboard data: {metricsError || clientsError}
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  // Use clients from API instead of sorted mock data
+  const sortedClients = clients
+
+  // Guard against null metrics
+  if (!metrics) {
+    return (
+      <div className="p-6 space-y-6">
+        <div className="flex justify-between items-center">
+          <h1 className="text-3xl font-bold">Dashboard Overview</h1>
+        </div>
+        <div className="flex items-center justify-center h-64">
+          <div className="text-lg text-red-600">No metrics data available</div>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="p-6 space-y-6">
@@ -144,12 +142,8 @@ export function AdminDashboard() {
           <CardContent>
             <div className="text-2xl font-bold">{metrics.totalWorkflows}</div>
             <div className="flex items-center text-xs text-muted-foreground">
-              {calculatePercentageChange(metrics.totalWorkflows, metrics.previousPeriodComparison.totalWorkflows) >= 0 ? (
-                <TrendingUp className="h-4 w-4 text-green-500 mr-1" />
-              ) : (
-                <TrendingDown className="h-4 w-4 text-red-500 mr-1" />
-              )}
-              {Math.abs(calculatePercentageChange(metrics.totalWorkflows, metrics.previousPeriodComparison.totalWorkflows)).toFixed(1)}% from last period
+              <TrendingUp className="h-4 w-4 text-green-500 mr-1" />
+              Current period
             </div>
           </CardContent>
         </Card>
@@ -162,12 +156,8 @@ export function AdminDashboard() {
           <CardContent>
             <div className="text-2xl font-bold">{metrics.totalExceptions}</div>
             <div className="flex items-center text-xs text-muted-foreground">
-              {calculatePercentageChange(metrics.totalExceptions, metrics.previousPeriodComparison.totalExceptions) >= 0 ? (
-                <TrendingUp className="h-4 w-4 text-red-500 mr-1" />
-              ) : (
-                <TrendingDown className="h-4 w-4 text-green-500 mr-1" />
-              )}
-              {Math.abs(calculatePercentageChange(metrics.totalExceptions, metrics.previousPeriodComparison.totalExceptions)).toFixed(1)}% from last period
+              <TrendingDown className="h-4 w-4 text-green-500 mr-1" />
+              Current period
             </div>
           </CardContent>
         </Card>
@@ -178,14 +168,10 @@ export function AdminDashboard() {
             <Clock className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{formatHours(metrics.timeSaved)}</div>
+            <div className="text-2xl font-bold">{formatHours(metrics.totalTimeSaved)}</div>
             <div className="flex items-center text-xs text-muted-foreground">
-              {calculatePercentageChange(metrics.timeSaved, metrics.previousPeriodComparison.timeSaved) >= 0 ? (
-                <TrendingUp className="h-4 w-4 text-green-500 mr-1" />
-              ) : (
-                <TrendingDown className="h-4 w-4 text-red-500 mr-1" />
-              )}
-              {Math.abs(calculatePercentageChange(metrics.timeSaved, metrics.previousPeriodComparison.timeSaved)).toFixed(1)}% from last period
+              <TrendingUp className="h-4 w-4 text-green-500 mr-1" />
+              Current period
             </div>
           </CardContent>
         </Card>
@@ -196,14 +182,10 @@ export function AdminDashboard() {
             <DollarSign className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{formatCurrency(metrics.revenue)}</div>
+            <div className="text-2xl font-bold">{formatCurrency(metrics.totalRevenue)}</div>
             <div className="flex items-center text-xs text-muted-foreground">
-              {calculatePercentageChange(metrics.revenue, metrics.previousPeriodComparison.revenue) >= 0 ? (
-                <TrendingUp className="h-4 w-4 text-green-500 mr-1" />
-              ) : (
-                <TrendingDown className="h-4 w-4 text-red-500 mr-1" />
-              )}
-              {Math.abs(calculatePercentageChange(metrics.revenue, metrics.previousPeriodComparison.revenue)).toFixed(1)}% from last period
+              <TrendingUp className="h-4 w-4 text-green-500 mr-1" />
+              Current period
             </div>
           </CardContent>
         </Card>
@@ -214,14 +196,10 @@ export function AdminDashboard() {
             <Users className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{metrics.activeClients}</div>
+            <div className="text-2xl font-bold">{metrics.totalClients}</div>
             <div className="flex items-center text-xs text-muted-foreground">
-              {calculatePercentageChange(metrics.activeClients, metrics.previousPeriodComparison.activeClients) >= 0 ? (
-                <TrendingUp className="h-4 w-4 text-green-500 mr-1" />
-              ) : (
-                <TrendingDown className="h-4 w-4 text-red-500 mr-1" />
-              )}
-              {Math.abs(calculatePercentageChange(metrics.activeClients, metrics.previousPeriodComparison.activeClients)).toFixed(1)}% from last period
+              <TrendingUp className="h-4 w-4 text-green-500 mr-1" />
+              Current period
             </div>
           </CardContent>
         </Card>
