@@ -9,6 +9,7 @@ import { UserManagement } from '@/components/admin/UserManagement/UserManagement
 import { Subscriptions } from '@/components/admin/Subscriptions/Subscriptions'
 import { SubscriptionNew } from '@/components/admin/SubscriptionNew/SubscriptionNew'
 import { Exceptions } from '@/components/admin/Exceptions/Exceptions'
+import { Credentials } from '@/components/admin/Credentials/Credentials'
 import { ClientDashboard } from '@/components/client/Dashboard/Dashboard'
 import { WorkflowManagement } from '@/components/client/WorkflowManagement/WorkflowManagement'
 import { ExceptionHandling } from '@/components/client/ExceptionHandling/ExceptionHandling'
@@ -99,6 +100,13 @@ function AppRoutes() {
         <ProtectedRoute>
           <AdminRoute>
             <Exceptions />
+          </AdminRoute>
+        </ProtectedRoute>
+      } />
+      <Route path="/admin/credentials" element={
+        <ProtectedRoute>
+          <AdminRoute>
+            <Credentials />
           </AdminRoute>
         </ProtectedRoute>
       } />
