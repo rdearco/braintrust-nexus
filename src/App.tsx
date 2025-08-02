@@ -134,6 +134,13 @@ function AppRoutes() {
           </ClientRoute>
         </ProtectedRoute>
       } />
+      <Route path="/client/credentials" element={
+        <ProtectedRoute>
+          <ClientRoute>
+            <Credentials />
+          </ClientRoute>
+        </ProtectedRoute>
+      } />
       <Route path="/client/exceptions" element={
         <ProtectedRoute>
           <ClientRoute>
