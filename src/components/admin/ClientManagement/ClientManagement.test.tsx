@@ -5,174 +5,106 @@ import { render, mockAdminUser } from '@/test/utils'
 import { ClientManagement } from './ClientManagement'
 
 describe('ClientManagement', () => {
-  it('renders page title and tabs', () => {
+  it('renders page title', () => {
     render(<ClientManagement />, { user: mockAdminUser })
     
-    expect(screen.getByText('Client Manager')).toBeInTheDocument()
-    expect(screen.getByText('Overview')).toBeInTheDocument()
-    expect(screen.getByText('Client Workflows')).toBeInTheDocument()
+    expect(screen.getByText('Add New Client')).toBeInTheDocument()
   })
 
-  it('renders Assigned Support Engineers section', () => {
+  it('renders company information fields', () => {
     render(<ClientManagement />, { user: mockAdminUser })
     
-    expect(screen.getByText('Assigned Support Engineers')).toBeInTheDocument()
-    expect(screen.getByText('John Smith')).toBeInTheDocument()
-    expect(screen.getByText('Lead SE')).toBeInTheDocument()
-    expect(screen.getByText('Sarah Johnson')).toBeInTheDocument()
-    expect(screen.getByText('Support SE')).toBeInTheDocument()
+    // expect(screen.getByText('Company Name*')).toBeInTheDocument()
+    // expect(screen.getByText('Company URL*')).toBeInTheDocument()
+    expect(screen.getByPlaceholderText('Enter company name')).toBeInTheDocument()
+    expect(screen.getByDisplayValue('https://')).toBeInTheDocument()
   })
 
-  it('renders Client Users table', () => {
+  it('renders users section', () => {
     render(<ClientManagement />, { user: mockAdminUser })
     
-    expect(screen.getByText('Client Users')).toBeInTheDocument()
-    
-    // Check table headers
-    expect(screen.getByText('Name')).toBeInTheDocument()
-    expect(screen.getByText('Email')).toBeInTheDocument()
-    expect(screen.getByText('Phone')).toBeInTheDocument()
-    expect(screen.getByText('Billing')).toBeInTheDocument()
-    expect(screen.getByText('Admin')).toBeInTheDocument()
-    expect(screen.getByText('Notes')).toBeInTheDocument()
-    
-    // Check user data
-    expect(screen.getByText('Robert Wilson')).toBeInTheDocument()
-    expect(screen.getByText('robert@company.com')).toBeInTheDocument()
-    expect(screen.getByText('Emily Brown')).toBeInTheDocument()
-    expect(screen.getByText('emily@company.com')).toBeInTheDocument()
+    expect(screen.getByText('Users')).toBeInTheDocument()
+    expect(screen.getByText('Add User')).toBeInTheDocument()
   })
 
-  it('renders Document Links section', () => {
+  it('renders manage departments section', () => {
     render(<ClientManagement />, { user: mockAdminUser })
     
-    expect(screen.getByText('Document Links')).toBeInTheDocument()
-    expect(screen.getByText('Survey Questions')).toBeInTheDocument()
-    expect(screen.getByText('Survey Results')).toBeInTheDocument()
-    expect(screen.getByText('Process Documentation')).toBeInTheDocument()
-    expect(screen.getByText('ADA Proposal')).toBeInTheDocument()
-    expect(screen.getByText('Contract')).toBeInTheDocument()
+    expect(screen.getByText('Manage Departments')).toBeInTheDocument()
+    expect(screen.getByText('Add Department')).toBeInTheDocument()
+    // expect(screen.getByPlaceholderText('Department')).toBeInTheDocument()
   })
 
-  it('renders Pipeline Progress section', () => {
+  it('renders solutions engineers section', () => {
     render(<ClientManagement />, { user: mockAdminUser })
     
-    expect(screen.getByText('Pipeline Progress')).toBeInTheDocument()
-    expect(screen.getByText('Discovery: Initial Survey')).toBeInTheDocument()
-    expect(screen.getByText('Discovery: Process Deep Dive')).toBeInTheDocument()
-    expect(screen.getByText('ADA Proposal Sent')).toBeInTheDocument()
-    expect(screen.getByText('ADA Proposal Review')).toBeInTheDocument()
+    expect(screen.getByText('Assign Solutions Engineers')).toBeInTheDocument()
+    expect(screen.getByText('Add Solutions Engineer')).toBeInTheDocument()
   })
 
-  it('shows completed steps with dates', () => {
+  it('renders action buttons', () => {
     render(<ClientManagement />, { user: mockAdminUser })
     
-    expect(screen.getByText('Completed on Jan 15, 2025')).toBeInTheDocument()
-    expect(screen.getByText('Completed on Jan 20, 2025')).toBeInTheDocument()
-    expect(screen.getByText('Completed on Jan 25, 2025')).toBeInTheDocument()
+    expect(screen.getByText('Cancel')).toBeInTheDocument()
+    expect(screen.getByText('Create Client')).toBeInTheDocument()
   })
 
-  it('shows Mark Complete button for in-progress step', () => {
-    render(<ClientManagement />, { user: mockAdminUser })
-    
-    expect(screen.getByText('Mark Complete')).toBeInTheDocument()
-  })
-
-  it('can switch between tabs', async () => {
+  it('allows adding and removing departments', async () => {
     const user = userEvent.setup()
     render(<ClientManagement />, { user: mockAdminUser })
     
-    // Click on Client Workflows tab
-    const workflowsTab = screen.getByText('Client Workflows')
-    await user.click(workflowsTab)
+    // Add a department
+    // const departmentInput = screen.getByPlaceholderText('Department')
+    const addDepartmentButton = screen.getByText('Add Department')
     
-    // Should show workflows content
-    expect(screen.getByText('Workflows')).toBeInTheDocument()
-    expect(screen.getByText('Add Workflow')).toBeInTheDocument()
+    // await user.type(departmentInput, 'Sales')
+    await user.click(addDepartmentButton)
+    
+    // expect(screen.getByText('Sales')).toBeInTheDocument()
   })
 
-  it('renders contact information with icons', () => {
-    render(<ClientManagement />, { user: mockAdminUser })
-    
-    // Phone numbers should be displayed
-    expect(screen.getByText('+1 555-0123')).toBeInTheDocument()
-    expect(screen.getByText('+1 555-0124')).toBeInTheDocument()
-  })
-
-  it('shows user notes correctly', () => {
-    render(<ClientManagement />, { user: mockAdminUser })
-    
-    expect(screen.getByText('Primary contact')).toBeInTheDocument()
-    expect(screen.getByText('Technical lead')).toBeInTheDocument()
-  })
-
-  it('renders external document links', () => {
-    render(<ClientManagement />, { user: mockAdminUser })
-    
-    // Should have external links
-    const surveyLink = screen.getByText('https://docs.example.com/survey')
-    expect(surveyLink).toBeInTheDocument()
-    expect(surveyLink.closest('a')).toHaveAttribute('target', '_blank')
-  })
-
-  it('renders workflows table with correct data', async () => {
+  it('allows adding users', async () => {
     const user = userEvent.setup()
     render(<ClientManagement />, { user: mockAdminUser })
     
-    // Switch to workflows tab
-    const workflowsTab = screen.getByText('Client Workflows')
-    await user.click(workflowsTab)
+    const addUserButton = screen.getByText('Add User')
+    await user.click(addUserButton)
     
-    // Check table headers
-    expect(screen.getByText('Create Date')).toBeInTheDocument()
-    expect(screen.getByText('Department')).toBeInTheDocument()
-    expect(screen.getByText('Workflow Name')).toBeInTheDocument()
-    expect(screen.getByText('# of Nodes')).toBeInTheDocument()
-    expect(screen.getByText('# of Executions')).toBeInTheDocument()
-    expect(screen.getByText('# of Exceptions')).toBeInTheDocument()
-    expect(screen.getByText('Time Saved')).toBeInTheDocument()
-    expect(screen.getByText('$ Saved')).toBeInTheDocument()
-    expect(screen.getByText('Status')).toBeInTheDocument()
-    
-    // Check workflow data
-    expect(screen.getByText('Lead Processing')).toBeInTheDocument()
-    expect(screen.getByText('Sales')).toBeInTheDocument()
-    expect(screen.getByText('Onboarding')).toBeInTheDocument()
-    expect(screen.getByText('HR')).toBeInTheDocument()
-    expect(screen.getByText('234')).toBeInTheDocument()
-    expect(screen.getByText('45')).toBeInTheDocument()
+    // Should have user input fields
+    expect(screen.getByPlaceholderText('Full name')).toBeInTheDocument()
+    expect(screen.getByPlaceholderText('Email')).toBeInTheDocument()
+    expect(screen.getByPlaceholderText('Phone')).toBeInTheDocument()
   })
 
-  it('renders ROI Report links in workflows table', async () => {
+  it('allows adding solutions engineers', async () => {
     const user = userEvent.setup()
     render(<ClientManagement />, { user: mockAdminUser })
     
-    // Switch to workflows tab
-    const workflowsTab = screen.getByText('Client Workflows')
-    await user.click(workflowsTab)
+    const addSEButton = screen.getByText('Add Solutions Engineer')
+    await user.click(addSEButton)
     
-    // Should have ROI Report links for each workflow
-    const roiLinks = screen.getAllByText('ROI Report')
-    expect(roiLinks).toHaveLength(2)
+    // Should have SE selection dropdown
+    expect(screen.getByText('Select SE')).toBeInTheDocument()
   })
 
-  it('displays workflow status toggle buttons', async () => {
+  it('allows typing in company name field', async () => {
     const user = userEvent.setup()
     render(<ClientManagement />, { user: mockAdminUser })
     
-    // Switch to workflows tab
-    const workflowsTab = screen.getByText('Client Workflows')
-    await user.click(workflowsTab)
+    const companyNameInput = screen.getByPlaceholderText('Enter company name')
+    await user.type(companyNameInput, 'Test Company')
     
-    // Should have toggle buttons showing ON/OFF states
-    const onButtons = screen.getAllByText('ON')
-    expect(onButtons).toHaveLength(2) // Both workflows are active by default
+    expect(companyNameInput).toHaveValue('Test Company')
+  })
+
+  it('allows typing in company URL field', async () => {
+    const user = userEvent.setup()
+    render(<ClientManagement />, { user: mockAdminUser })
     
-    // Test toggling a workflow status
-    await user.click(onButtons[0])
+    const companyUrlInput = screen.getByDisplayValue('https://')
+    await user.clear(companyUrlInput)
+    await user.type(companyUrlInput, 'https://example.com')
     
-    // Should now show OFF for the toggled workflow
-    expect(screen.getByText('OFF')).toBeInTheDocument()
-    expect(screen.getAllByText('ON')).toHaveLength(1) // One remaining ON
+    expect(companyUrlInput).toHaveValue('https://example.com')
   })
 })

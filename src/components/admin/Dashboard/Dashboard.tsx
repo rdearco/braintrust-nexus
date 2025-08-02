@@ -212,7 +212,7 @@ export function AdminDashboard() {
         <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle>All Clients</CardTitle>
           <Button asChild className="whitespace-nowrap flex items-center">
-            <Link to="/admin/clients" className="flex items-center gap-2">
+            <Link to="/admin/client-management" className="flex items-center gap-2">
               <Plus className="h-4 w-4" />
               Add Client
             </Link>

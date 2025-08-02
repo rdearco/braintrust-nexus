@@ -4,6 +4,7 @@ import { AuthProvider, useAuth } from '@/contexts/AuthContext'
 import { LoginForm } from '@/components/auth/LoginForm'
 import { Layout } from '@/components/layout/Layout'
 import { AdminDashboard } from '@/components/admin/Dashboard/Dashboard'
+import { Clients } from '@/components/admin/clients/clients'
 import { ClientManagement } from '@/components/admin/ClientManagement/ClientManagement'
 import { UserManagement } from '@/components/admin/UserManagement/UserManagement'
 import { Subscriptions } from '@/components/admin/Subscriptions/Subscriptions'
@@ -14,7 +15,7 @@ import { Billing } from '@/components/admin/Billing/Billing'
 import { ClientDashboard } from '@/components/client/Dashboard/Dashboard'
 import { WorkflowManagement } from '@/components/client/WorkflowManagement/WorkflowManagement'
 import { Reporting } from '@/components/client/Reporting/Reporting'
-import { ExceptionHandling } from '@/components/client/ExceptionHandling/ExceptionHandling'
+
 import './index.css'
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
@@ -71,6 +72,13 @@ function AppRoutes() {
         </ProtectedRoute>
       } />
       <Route path="/admin/clients" element={
+        <ProtectedRoute>
+          <AdminRoute>
+            <Clients />
+          </AdminRoute>
+        </ProtectedRoute>
+      } />
+      <Route path="/admin/client-management" element={
         <ProtectedRoute>
           <AdminRoute>
             <ClientManagement />
@@ -159,7 +167,7 @@ function AppRoutes() {
       <Route path="/client/exceptions" element={
         <ProtectedRoute>
           <ClientRoute>
-            <ExceptionHandling />
+            <Exceptions />
           </ClientRoute>
         </ProtectedRoute>
       } />

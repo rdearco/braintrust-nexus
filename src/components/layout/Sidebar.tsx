@@ -58,7 +58,8 @@ export function Sidebar({ className }: SidebarProps) {
           {navItems.map((item) => {
             const Icon = item.icon
             const isActive = location.pathname === item.href || 
-              (item.href !== '/admin' && item.href !== '/client' && location.pathname.startsWith(item.href))
+              (item.href !== '/admin' && item.href !== '/client' && location.pathname.startsWith(item.href)) ||
+              (item.href === '/admin/clients' && location.pathname === '/admin/client-management')
             
             return (
               <li key={item.href}>

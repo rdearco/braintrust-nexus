@@ -1,351 +1,363 @@
 import { useState } from 'react'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { 
-  Check,
-  Circle,
-  ExternalLink,
-  Phone,
-  Mail,
-  FileText,
-  Plus
-} from 'lucide-react'
+import { Input } from '@/components/ui/input'
+import { Card, CardContent } from '@/components/ui/card'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { Checkbox } from '@/components/ui/checkbox'
+import { Plus, Trash2 } from 'lucide-react'
 
-const clientWorkflows = [
-  {
-    id: '1',
-    createDate: 'Jan 15, 2025',
-    department: 'Sales',
-    workflowName: 'Lead Processing',
-    nodes: 12,
-    executions: 234,
-    exceptions: 2,
-    timeSaved: 30,
-    moneySaved: 75,
-    status: 'active'
-  },
-  {
-    id: '2', 
-    createDate: 'Jan 10, 2025',
-    department: 'HR',
-    workflowName: 'Onboarding',
-    nodes: 8,
-    executions: 45,
-    exceptions: 0,
-    timeSaved: 120,
-    moneySaved: 180,
-    status: 'active'
-  }
-]
+interface Department {
+  id: string
+  name: string
+}
 
-const supportEngineers = [
-  {
-    id: '1',
-    name: 'John Smith',
-    role: 'Lead SE',
-    avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=32&h=32&fit=crop&crop=face'
-  },
-  {
-    id: '2', 
-    name: 'Sarah Johnson',
-    role: 'Support SE',
-    avatar: 'https://images.unsplash.com/photo-1494790108755-2616c2d6bb0e?w=32&h=32&fit=crop&crop=face'
-  }
-]
+interface User {
+  id: string
+  name: string
+  email: string
+  phone: string
+  department: string
+  emailNotifications: boolean
+  smsNotifications: boolean
+  billingAccess: boolean
+  adminAccess: boolean
+}
 
-const clientUsers = [
-  {
-    id: '1',
-    name: 'Robert Wilson',
-    email: 'robert@company.com',
-    phone: '+1 555-0123',
-    billing: true,
-    admin: true,
-    notes: 'Primary contact'
-  },
-  {
-    id: '2',
-    name: 'Emily Brown', 
-    email: 'emily@company.com',
-    phone: '+1 555-0124',
-    billing: false,
-    admin: false,
-    notes: 'Technical lead'
-  }
-]
-
-const documentLinks = [
-  { label: 'Survey Questions', url: 'https://docs.example.com/survey' },
-  { label: 'Survey Results', url: 'https://docs.example.com/results' },
-  { label: 'Process Documentation', url: 'https://docs.example.com/process' },
-  { label: 'ADA Proposal', url: 'https://docs.example.com/proposal' },
-  { label: 'Contract', url: 'https://docs.example.com/contract' },
-  { label: 'Factory Markdown', url: 'https://docs.example.com/factory-markdown' },
-  { label: 'Test Plan', url: 'https://docs.example.com/test-plan' }
-]
-
-const pipelineSteps = [
-  { label: 'Discovery: Initial Survey', completed: true, date: 'Jan 15, 2025' },
-  { label: 'Discovery: Process Deep Dive', completed: true, date: 'Jan 20, 2025' },
-  { label: 'ADA Proposal Sent', completed: true, date: 'Jan 25, 2025' },
-  { label: 'ADA Proposal Review', completed: false, inProgress: true },
-  { label: 'ADA Contract Sent', completed: false },
-  { label: 'ADA Contract Signed', completed: false },
-  { label: 'Credentials Collected', completed: false },
-  { label: 'Factory Build Initiated', completed: false },
-  { label: 'Test Plan Generated', completed: false },
-  { label: 'Testing Started', completed: false },
-  { label: 'Production Deploy', completed: false }
-]
+interface SolutionsEngineer {
+  id: string
+  name: string
+  email: string
+}
 
 export function ClientManagement() {
-  const [activeTab, setActiveTab] = useState('overview')
-  const [workflowStatuses, setWorkflowStatuses] = useState<Record<string, boolean>>(
-    Object.fromEntries(clientWorkflows.map(w => [w.id, w.status === 'active']))
-  )
+  const [companyName, setCompanyName] = useState('')
+  const [companyUrl, setCompanyUrl] = useState('https://')
+  const [departments, setDepartments] = useState<Department[]>([])
+  const [users, setUsers] = useState<User[]>([])
+  const [solutionsEngineers, setSolutionsEngineers] = useState<SolutionsEngineer[]>([])
 
-  const toggleWorkflowStatus = (workflowId: string) => {
-    setWorkflowStatuses(prev => ({
-      ...prev,
-      [workflowId]: !prev[workflowId]
-    }))
+  const addDepartment = () => {
+    setDepartments([...departments, {
+      id: Date.now().toString(),
+      name: ''
+    }])
+  }
+
+  const removeDepartment = (id: string) => {
+    setDepartments(departments.filter(dept => dept.id !== id))
+  }
+
+  const addUser = () => {
+    setUsers([...users, {
+      id: Date.now().toString(),
+      name: '',
+      email: '',
+      phone: '',
+      department: '',
+      emailNotifications: false,
+      smsNotifications: false,
+      billingAccess: false,
+      adminAccess: false
+    }])
+  }
+
+  const updateUser = (id: string, field: keyof User, value: string | boolean) => {
+    setUsers(users.map(user => 
+      user.id === id ? { ...user, [field]: value } : user
+    ))
+  }
+
+  const removeUser = (id: string) => {
+    setUsers(users.filter(user => user.id !== id))
+  }
+
+  const addSolutionsEngineer = () => {
+    setSolutionsEngineers([...solutionsEngineers, {
+      id: Date.now().toString(),
+      name: '',
+      email: ''
+    }])
+  }
+
+  const updateSolutionsEngineer = (id: string, field: keyof SolutionsEngineer, value: string) => {
+    setSolutionsEngineers(solutionsEngineers.map(se => 
+      se.id === id ? { ...se, [field]: value } : se
+    ))
+  }
+
+  const removeSolutionsEngineer = (id: string) => {
+    setSolutionsEngineers(solutionsEngineers.filter(se => se.id !== id))
   }
 
   return (
-    <div className="p-6 space-y-6">
-      <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-bold">Client Manager</h1>
-      </div>
-
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="grid w-fit grid-cols-2">
-          <TabsTrigger value="overview">Overview</TabsTrigger>
-          <TabsTrigger value="workflows" className="text-gray-500">Client Workflows</TabsTrigger>
-        </TabsList>
-
-        <TabsContent value="overview" className="space-y-6">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            {/* Main Content */}
-            <div className="lg:col-span-2 space-y-6">
-              {/* Assigned Support Engineers */}
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-lg">Assigned Support Engineers</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="flex gap-4">
-                    {supportEngineers.map((engineer) => (
-                      <div key={engineer.id} className="flex items-center gap-3">
-                        <Avatar className="h-10 w-10">
-                          <AvatarImage src={engineer.avatar} alt={engineer.name} />
-                          <AvatarFallback>{engineer.name.split(' ').map(n => n[0]).join('')}</AvatarFallback>
-                        </Avatar>
-                        <div>
-                          <div className="font-medium">{engineer.name}</div>
-                          <div className="text-sm text-gray-500">{engineer.role}</div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-
-              {/* Client Users Table */}
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-lg">Client Users</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>Name</TableHead>
-                        <TableHead>Email</TableHead>
-                        <TableHead>Phone</TableHead>
-                        <TableHead>Billing</TableHead>
-                        <TableHead>Admin</TableHead>
-                        <TableHead>Notes</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {clientUsers.map((user) => (
-                        <TableRow key={user.id}>
-                          <TableCell className="font-medium">{user.name}</TableCell>
-                          <TableCell>
-                            <div className="flex items-center gap-2">
-                              <Mail className="h-4 w-4 text-gray-400" />
-                              {user.email}
-                            </div>
-                          </TableCell>
-                          <TableCell>
-                            <div className="flex items-center gap-2">
-                              <Phone className="h-4 w-4 text-gray-400" />
-                              {user.phone}
-                            </div>
-                          </TableCell>
-                          <TableCell>
-                            {user.billing ? <Check className="h-4 w-4 text-green-600" /> : '—'}
-                          </TableCell>
-                          <TableCell>
-                            {user.admin ? <Check className="h-4 w-4 text-green-600" /> : '—'}
-                          </TableCell>
-                          <TableCell className="text-sm text-gray-600">{user.notes}</TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                </CardContent>
-              </Card>
-
-              {/* Pipeline Progress */}
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-lg">Pipeline Progress</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-3">
-                    {pipelineSteps.map((step, index) => (
-                      <div key={index} className="flex items-center gap-3">
-                        <div className="flex-shrink-0">
-                          {step.completed ? (
-                            <div className="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center">
-                              <Check className="h-4 w-4 text-green-600" />
-                            </div>
-                          ) : step.inProgress ? (
-                            <div className="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center">
-                              <div className="w-3 h-3 bg-blue-600 rounded-full"></div>
-                            </div>
-                          ) : (
-                            <div className="w-6 h-6 bg-gray-100 rounded-full flex items-center justify-center">
-                              <Circle className="h-4 w-4 text-gray-400" />
-                            </div>
-                          )}
-                        </div>
-                        <div className="flex-1">
-                          <div className={`font-medium ${step.completed ? 'text-gray-900' : step.inProgress ? 'text-blue-900' : 'text-gray-500'}`}>
-                            {step.label}
-                          </div>
-                          {step.date && (
-                            <div className="text-sm text-gray-500">Completed on {step.date}</div>
-                          )}
-                        </div>
-                        {step.inProgress && (
-                          <Button size="sm" className="bg-black hover:bg-gray-800 text-white">
-                            Mark Complete
-                          </Button>
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-
-            {/* Document Links Sidebar */}
-            <div className="space-y-6">
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-lg flex items-center gap-2">
-                    <FileText className="h-5 w-5" />
-                    Document Links
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-3">
-                    {documentLinks.map((doc, index) => (
-                      <div key={index}>
-                        <div className="text-sm font-medium text-gray-900 mb-1">{doc.label}</div>
-                        <a 
-                          href={doc.url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-sm text-blue-600 hover:text-blue-800 flex items-center gap-1"
-                        >
-                          {doc.url}
-                          <ExternalLink className="h-3 w-3" />
-                        </a>
-                      </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-          </div>
-        </TabsContent>
-
-        <TabsContent value="workflows" className="space-y-6">
-          <div className="flex justify-between items-center">
-            <h2 className="text-xl font-semibold">Workflows</h2>
-            <Button className="bg-black hover:bg-gray-800 text-white">
-              <Plus className="h-4 w-4 mr-2" />
-              Add Workflow
-            </Button>
-          </div>
-          
+    <div className="p-6 space-y-6 max-w-6xl">
+      <h1 className="text-2xl font-bold">Add New Client</h1>
+      
+      <div className="space-y-6">
+        {/* Company Information and Manage Departments */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          {/* Company Information */}
           <Card>
-            <CardContent className="p-0">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Create Date</TableHead>
-                    <TableHead>Department</TableHead>
-                    <TableHead>Workflow Name</TableHead>
-                    <TableHead># of Nodes</TableHead>
-                    <TableHead># of Executions</TableHead>
-                    <TableHead># of Exceptions</TableHead>
-                    <TableHead>Time Saved</TableHead>
-                    <TableHead>$ Saved</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead></TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {clientWorkflows.map((workflow) => (
-                    <TableRow key={workflow.id}>
-                      <TableCell className="font-medium">{workflow.createDate}</TableCell>
-                      <TableCell>{workflow.department}</TableCell>
-                      <TableCell>{workflow.workflowName}</TableCell>
-                      <TableCell>{workflow.nodes}</TableCell>
-                      <TableCell className="text-blue-600">{workflow.executions}</TableCell>
-                      <TableCell>{workflow.exceptions}</TableCell>
-                      <TableCell>
-                        <div>{workflow.timeSaved}</div>
-                        <div className="text-xs text-gray-500">min</div>
-                      </TableCell>
-                      <TableCell>
-                        <div>{workflow.moneySaved}</div>
-                        <div className="text-xs text-gray-500">USD</div>
-                      </TableCell>
-                      <TableCell>
-                        <Button
-                          variant={workflowStatuses[workflow.id] ? "default" : "outline"}
-                          size="sm"
-                          onClick={() => toggleWorkflowStatus(workflow.id)}
-                          className={`w-16 h-6 text-xs ${
-                            workflowStatuses[workflow.id] 
-                              ? 'bg-black hover:bg-gray-800 text-white' 
-                              : 'bg-white hover:bg-gray-50 text-gray-900 border-gray-300'
-                          }`}
-                        >
-                          {workflowStatuses[workflow.id] ? 'ON' : 'OFF'}
-                        </Button>
-                      </TableCell>
-                      <TableCell>
-                        <Button variant="link" className="text-blue-600 p-0 h-auto">
-                          ROI Report
-                        </Button>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
+            <CardContent className="p-6 space-y-4">
+              <div>
+                <label className="block text-sm font-medium mb-1">
+                  Company Name<span className="text-red-500">*</span>
+                </label>
+                <Input
+                  placeholder="Enter company name"
+                  value={companyName}
+                  onChange={(e) => setCompanyName(e.target.value)}
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium mb-1">
+                  Company URL<span className="text-red-500">*</span>
+                </label>
+                <Input
+                  placeholder="https://"
+                  value={companyUrl}
+                  onChange={(e) => setCompanyUrl(e.target.value)}
+                />
+              </div>
             </CardContent>
           </Card>
-        </TabsContent>
-      </Tabs>
+
+          {/* Manage Departments */}
+          <Card>
+            <CardContent className="p-6 space-y-4">
+              <h3 className="text-lg font-medium">Manage Departments</h3>
+              
+              {/* Department Header */}
+              <div className="text-sm font-medium text-gray-600 border-b pb-2">
+                Department Name
+              </div>
+
+              {/* Department List */}
+              {departments.map((department) => (
+                <div key={department.id} className="grid grid-cols-12 gap-2 items-center py-2">
+                  <div className="col-span-11">
+                    <Input
+                      value={department.name}
+                      onChange={(e) => setDepartments(departments.map(dept => 
+                        dept.id === department.id ? { ...dept, name: e.target.value } : dept
+                      ))}
+                      className="text-sm"
+                      placeholder="Department"
+                    />
+                  </div>
+                  <div className="col-span-1">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => removeDepartment(department.id)}
+                      className="h-8 w-8 p-0 text-red-600"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </div>
+              ))}
+
+              <Button
+                variant="outline"
+                onClick={addDepartment}
+                className="w-full mt-4"
+              >
+                <Plus className="h-4 w-4 mr-2" />
+                Add Department
+              </Button>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Users Section - Full Width */}
+        <Card>
+          <CardContent className="p-6 space-y-4">
+            <h3 className="text-lg font-medium">Users</h3>
+            
+            {/* Users Table Header */}
+            <div className="grid grid-cols-12 gap-2 text-sm font-medium text-gray-600 border-b pb-2">
+              <div className="col-span-2">Name</div>
+              <div className="col-span-2">Email</div>
+              <div className="col-span-2">Phone</div>
+              <div className="col-span-2">Department</div>
+              <div className="col-span-2">Exceptions</div>
+              <div className="col-span-2">Access</div>
+            </div>
+
+            {/* Users List */}
+            {users.map((user) => (
+              <div key={user.id} className="grid grid-cols-12 gap-2 items-center py-2">
+                <div className="col-span-2">
+                  <Input
+                    placeholder="Full name"
+                    value={user.name}
+                    onChange={(e) => updateUser(user.id, 'name', e.target.value)}
+                    className="text-sm"
+                  />
+                </div>
+                <div className="col-span-2">
+                  <Input
+                    placeholder="Email"
+                    type="email"
+                    value={user.email}
+                    onChange={(e) => updateUser(user.id, 'email', e.target.value)}
+                    className="text-sm"
+                  />
+                </div>
+                <div className="col-span-2">
+                  <Input
+                    placeholder="Phone"
+                    value={user.phone}
+                    onChange={(e) => updateUser(user.id, 'phone', e.target.value)}
+                    className="text-sm"
+                  />
+                </div>
+                <div className="col-span-2">
+                  <Select value={user.department} onValueChange={(value) => updateUser(user.id, 'department', value)}>
+                    <SelectTrigger className="text-sm">
+                      <SelectValue placeholder="Select Department" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {departments.map((dept) => (
+                        <SelectItem key={dept.id} value={dept.id}>
+                          {dept.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="col-span-2 space-y-1">
+                  <div className="flex items-center space-x-2">
+                    <Checkbox
+                      id={`email-${user.id}`}
+                      checked={user.emailNotifications}
+                      onCheckedChange={(checked) => updateUser(user.id, 'emailNotifications', !!checked)}
+                    />
+                    <label htmlFor={`email-${user.id}`} className="text-xs">Email</label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <Checkbox
+                      id={`sms-${user.id}`}
+                      checked={user.smsNotifications}
+                      onCheckedChange={(checked) => updateUser(user.id, 'smsNotifications', !!checked)}
+                    />
+                    <label htmlFor={`sms-${user.id}`} className="text-xs">SMS</label>
+                  </div>
+                </div>
+                <div className="col-span-1 space-y-1">
+                  <div className="flex items-center space-x-2">
+                    <Checkbox
+                      id={`billing-${user.id}`}
+                      checked={user.billingAccess}
+                      onCheckedChange={(checked) => updateUser(user.id, 'billingAccess', !!checked)}
+                    />
+                    <label htmlFor={`billing-${user.id}`} className="text-xs">Billing Access</label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <Checkbox
+                      id={`admin-${user.id}`}
+                      checked={user.adminAccess}
+                      onCheckedChange={(checked) => updateUser(user.id, 'adminAccess', !!checked)}
+                    />
+                    <label htmlFor={`admin-${user.id}`} className="text-xs">Admin Access</label>
+                  </div>
+                </div>
+                <div className="col-span-1">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => removeUser(user.id)}
+                    className="h-8 w-8 p-0 text-red-600"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </div>
+              </div>
+            ))}
+
+            <Button
+              variant="outline"
+              onClick={addUser}
+              className="w-full mt-4"
+            >
+              <Plus className="h-4 w-4 mr-2" />
+              Add User
+            </Button>
+          </CardContent>
+        </Card>
+
+        {/* Assign Solutions Engineers - Full Width */}
+        <Card>
+          <CardContent className="p-6 space-y-4">
+            <h3 className="text-lg font-medium">Assign Solutions Engineers</h3>
+            
+            {/* SE Table Header */}
+            <div className="grid grid-cols-3 gap-4 text-sm font-medium text-gray-600 border-b pb-2">
+              <div>Name</div>
+              <div>Email</div>
+              <div>Actions</div>
+            </div>
+
+            {/* SE List */}
+            {solutionsEngineers.map((se) => (
+              <div key={se.id} className="grid grid-cols-3 gap-4 items-center py-2">
+                <div>
+                  <Select value={se.name} onValueChange={(value) => updateSolutionsEngineer(se.id, 'name', value)}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select SE" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="john-smith">John Smith</SelectItem>
+                      <SelectItem value="sarah-johnson">Sarah Johnson</SelectItem>
+                      <SelectItem value="alex-chen">Alex Chen</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <Input
+                    placeholder="email@example.com"
+                    value={se.email}
+                    onChange={(e) => updateSolutionsEngineer(se.id, 'email', e.target.value)}
+                    disabled
+                    className="bg-gray-50"
+                  />
+                </div>
+                <div>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => removeSolutionsEngineer(se.id)}
+                    className="h-8 w-8 p-0 text-red-600"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </div>
+              </div>
+            ))}
+
+            <Button
+              variant="outline"
+              onClick={addSolutionsEngineer}
+              className="w-full mt-4"
+            >
+              <Plus className="h-4 w-4 mr-2" />
+              Add Solutions Engineer
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Action Buttons */}
+      <div className="flex justify-end gap-4 pt-6">
+        <Button variant="outline">
+          Cancel
+        </Button>
+        <Button className="bg-black hover:bg-gray-800 text-white">
+          Create Client
+        </Button>
+      </div>
     </div>
   )
 }
