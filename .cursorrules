@@ -1,0 +1,175 @@
+# Braintrust Nexus - Cursor AI Rules
+
+## Project Context
+You are working on the Braintrust Nexus platform - an admin application with two main views (Admin and Client) for managing automated workflows and custom agents. This is a desktop-only web application with strict TypeScript requirements.
+
+## Tech Stack & Architecture
+- **Frontend**: React 18 with TypeScript (strict mode - NO `any` types allowed)
+- **Build Tool**: Vite
+- **Routing**: React Router v6
+- **UI Framework**: shadcn/ui components with Tailwind CSS
+- **API**: tRPC for type-safe endpoints
+- **Testing**: Vitest with React Testing Library
+- **Authentication**: Google OAuth2 (Admin) and internal auth with 2FA (Client)
+
+## Core Development Rules
+
+### TypeScript Standards
+- NEVER use `any` type - always provide proper typing
+- Use strict TypeScript configuration
+- Define interfaces for all data structures
+- Use proper generics where applicable
+- Prefer `type` over `interface` for simple object types
+
+### React Best Practices
+- Use functional components with hooks
+- Implement proper error boundaries
+- Use React.memo() for performance optimization where needed
+- Follow React 18 patterns (no legacy lifecycle methods)
+- Use proper dependency arrays in useEffect
+- Avoid unnecessary re-renders
+
+### Code Organization
+- Follow the established project structure:
+  ```
+  /src
+  ├── components/
+  │   ├── admin/        # Admin-specific components
+  │   ├── client/       # Client-specific components
+  │   ├── layout/       # Shared layout components
+  │   └── ui/          # shadcn/ui components
+  ├── contexts/        # React contexts
+  ├── hooks/           # Custom hooks
+  ├── lib/             # Utilities and configurations
+  ├── types/           # TypeScript type definitions
+  └── data/            # Mock data and constants
+  ```
+- Create separate test files (.test.tsx) for each component
+- Use index.ts files for clean imports
+- Keep components focused and single-responsibility
+
+### UI/UX Guidelines
+- Use shadcn/ui components as the foundation
+- Follow the Figma designs: https://www.figma.com/design/opulwnBe4xYyh4nz9o2Gc5/Nexus
+- Implement responsive design for desktop only (no mobile support needed)
+- Create professional loading, error, and empty states
+- Use consistent spacing and typography
+- Implement proper accessibility (ARIA labels, keyboard navigation)
+
+### Component Development
+- Always read existing components first to understand patterns
+- Use existing UI components from the shadcn/ui library
+- Follow established naming conventions
+- Implement proper prop typing with interfaces
+- Use consistent styling patterns with Tailwind CSS
+- Create reusable components when patterns emerge
+
+### Testing Requirements
+- Write comprehensive unit tests for all components
+- Use React Testing Library best practices
+- Test user interactions and edge cases
+- Mock external dependencies properly
+- Maintain high test coverage
+- Run tests before committing changes
+
+## Access Control & Roles
+- **Admin Role**: Full access to all clients and user management
+- **Solutions Engineer (SE)**: Access to assigned clients only  
+- **Client Role**: Access to own data and workflows only
+
+## Key Features Context
+
+### Admin App Features
+- Dashboard with data filters (7 days, 30 days, MTD, QTD, YTD, ITD)
+- Global metrics cards with trend indicators
+- Client management with sorting and filtering
+- Workflow management and exception handling
+- ROI tracking and reporting
+
+### Client App Features
+- Workflow management and monitoring
+- Exception reporting and resolution
+- Execution history viewing
+- Custom agent configuration
+
+## Development Workflow
+1. **Before coding**: Read existing code to understand patterns
+2. **Component creation**: Use existing components as templates
+3. **Styling**: Follow shadcn/ui + Tailwind patterns
+4. **Testing**: Write tests that match existing test patterns
+5. **Type safety**: Ensure strict TypeScript compliance
+6. **Quality checks**: Run lint, typecheck, and tests
+
+## File Naming Conventions
+- Components: PascalCase (e.g., `UserManagement.tsx`)
+- Tests: Component name + `.test.tsx` (e.g., `UserManagement.test.tsx`)
+- Hooks: camelCase starting with 'use' (e.g., `useAuth.ts`)
+- Utils: camelCase (e.g., `apiHelpers.ts`)
+- Types: PascalCase for interfaces/types (e.g., `User.ts`)
+
+## Import Organization
+```typescript
+// 1. React and external libraries
+import React from 'react'
+import { useState, useEffect } from 'react'
+
+// 2. Internal hooks and contexts
+import { useAuth } from '@/contexts/AuthContext'
+
+// 3. UI components
+import { Button } from '@/components/ui/button'
+import { Card } from '@/components/ui/card'
+
+// 4. Internal components
+import { UserList } from './UserList'
+
+// 5. Types and interfaces
+import type { User } from '@/types/User'
+
+// 6. Utils and constants
+import { formatDate } from '@/lib/utils'
+```
+
+## Error Handling
+- Always implement proper error boundaries
+- Use try-catch blocks for async operations
+- Provide meaningful error messages to users
+- Log errors appropriately for debugging
+- Create fallback UI states for error conditions
+
+## Performance Guidelines
+- Use React.memo for expensive components
+- Implement proper loading states
+- Optimize re-renders with useMemo and useCallback
+- Use lazy loading for route-based code splitting
+- Implement proper data fetching patterns
+
+## Build & Quality Commands
+```bash
+npm run dev        # Development server
+npm run build      # Production build
+npm run typecheck  # TypeScript checking
+npm run lint       # ESLint checking
+npm run test       # Run tests
+```
+
+## Common Anti-Patterns to Avoid
+- Using `any` type in TypeScript
+- Directly mutating state
+- Missing dependency arrays in useEffect
+- Inline styles instead of Tailwind classes
+- Not handling loading and error states
+- Missing proper TypeScript interfaces
+- Inconsistent component organization
+- Not following established patterns
+
+## When Making Changes
+1. Always check existing similar components first
+2. Follow the established patterns and conventions
+3. Ensure TypeScript strict compliance
+4. Write appropriate tests
+5. Run quality checks before finishing
+6. Consider accessibility and user experience
+7. Maintain consistency with the design system
+
+Remember: This is a production-quality application. Code should be maintainable, well-tested, and follow enterprise development standards.

@@ -1,6 +1,7 @@
 import React from 'react'
 import { Sidebar } from './Sidebar'
 import { Button } from '@/components/ui/button'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { LogOut } from 'lucide-react'
 import { useAuth } from '@/contexts/AuthContext'
 
@@ -19,9 +20,12 @@ export function Layout({ children }: LayoutProps) {
         <header className="bg-white border-b border-gray-200 px-6 py-1">
           <div className="flex items-center justify-end">
             <div className="flex items-center gap-3">
-              <div className="h-8 w-8 rounded-full bg-gray-600 flex items-center justify-center text-white text-sm font-medium">
-                {user?.name?.charAt(0)?.toUpperCase()}
-              </div>
+              <Avatar className="h-8 w-8">
+                <AvatarImage src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=32&h=32&fit=crop&crop=face" alt={user?.name || 'User'} />
+                <AvatarFallback>
+                  {user?.name?.charAt(0)?.toUpperCase()}
+                </AvatarFallback>
+              </Avatar>
               <Button
                 variant="ghost"
                 size="sm"
