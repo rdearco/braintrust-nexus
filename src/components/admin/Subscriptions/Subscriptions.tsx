@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
@@ -55,9 +56,11 @@ export function Subscriptions() {
     <div className="p-6 space-y-6">
       <div className="flex justify-between items-center">
         <h1 className="text-2xl font-bold">Plan Manager</h1>
-        <Button className="bg-black hover:bg-gray-800 text-white">
-          <Plus className="h-4 w-4 mr-2" />
-          Add Plan
+        <Button asChild className="bg-black hover:bg-gray-800 text-white whitespace-nowrap">
+          <Link to="/admin/subscriptions/new" className="flex items-center">
+            <Plus className="h-4 w-4 mr-2" />
+            Add Plan
+          </Link>
         </Button>
       </div>
 

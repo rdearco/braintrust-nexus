@@ -5,7 +5,8 @@ import {
   Building2, 
   Workflow,
   AlertTriangle,
-  CreditCard
+  CreditCard,
+  Shield
 } from 'lucide-react'
 import { useAuth } from '@/contexts/AuthContext'
 import { cn } from '@/lib/utils'
@@ -23,6 +24,7 @@ export function Sidebar({ className }: SidebarProps) {
     { icon: Users, label: 'Users', href: '/admin/users' },
     { icon: Building2, label: 'Clients', href: '/admin/clients' },
     { icon: CreditCard, label: 'Subscriptions', href: '/admin/subscriptions' },
+    { icon: Shield, label: 'Exceptions', href: '/admin/exceptions' },
   ]
 
   const clientNavItems = [
