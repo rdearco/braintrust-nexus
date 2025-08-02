@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -28,13 +28,24 @@ const timeFilters: TimeFilter[] = [
 ]
 
 export function AdminDashboard() {
-  const [selectedFilter, setSelectedFilter] = useState<TimeFilter['value']>('itd')
+  const [selectedFilter, setSelectedFilter] = useState<TimeFilter['value']>('7d')
   const [sortField, setSortField] = useState<string>('')
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc')
   const [isInitialLoad, setIsInitialLoad] = useState(true)
 
   // Use API hooks instead of direct mock data
-  const { metrics, loading: metricsLoading, error: metricsError } = useDashboardMetrics()
+  const { metrics: apiMetrics, loading: metricsLoading, error: metricsError } = useDashboardMetrics()
+  
+  // Local state for randomized metrics
+  const [metrics, setMetrics] = useState(apiMetrics)
+  
+  // Initialize metrics when apiMetrics are loaded
+  useEffect(() => {
+    if (apiMetrics) {
+      setMetrics(apiMetrics)
+    }
+  }, [apiMetrics])
+  
   const { clients, loading: clientsLoading, error: clientsError, updateSort } = useClients({
     limit: 50, // Show more clients on dashboard
     sortBy: sortField,
@@ -56,6 +67,45 @@ export function AdminDashboard() {
 
   const formatHours = (hours: number) => {
     return `${hours.toLocaleString()} hrs`
+  }
+
+  const generateRandomizedMetrics = (baseMetrics: typeof apiMetrics) => {
+    if (!baseMetrics) return null
+    
+    // Generate different multipliers based on time period
+    const getMultiplier = (period: TimeFilter['value']) => {
+      switch (period) {
+        case '7d': return 0.1 + Math.random() * 0.3 // 10-40% of total
+        case '30d': return 0.3 + Math.random() * 0.4 // 30-70% of total
+        case 'mtd': return 0.2 + Math.random() * 0.5 // 20-70% of total
+        case 'qtd': return 0.4 + Math.random() * 0.4 // 40-80% of total
+        case 'ytd': return 0.6 + Math.random() * 0.3 // 60-90% of total
+        case 'itd': return 1 // 100% of total (original values)
+        default: return 1
+      }
+    }
+    
+    const multiplier = getMultiplier(selectedFilter)
+    
+    return {
+      totalWorkflows: Math.floor(baseMetrics.totalWorkflows * multiplier),
+      totalExceptions: Math.floor(baseMetrics.totalExceptions * multiplier),
+      totalTimeSaved: Math.floor(baseMetrics.totalTimeSaved * multiplier),
+      totalRevenue: Math.floor(baseMetrics.totalRevenue * multiplier),
+      totalClients: selectedFilter === 'itd' ? baseMetrics.totalClients : Math.max(1, Math.floor(baseMetrics.totalClients * (0.5 + Math.random() * 0.5))),
+      totalExecutions: Math.floor(baseMetrics.totalExecutions * multiplier),
+      totalMoneySaved: Math.floor(baseMetrics.totalMoneySaved * multiplier)
+    }
+  }
+
+  const handleTimeFilterChange = (filterValue: TimeFilter['value']) => {
+    setSelectedFilter(filterValue)
+    if (apiMetrics) {
+      const randomizedMetrics = generateRandomizedMetrics(apiMetrics)
+      if (randomizedMetrics) {
+        setMetrics(randomizedMetrics)
+      }
+    }
   }
 
   const handleSort = (field: string) => {
@@ -127,7 +177,7 @@ export function AdminDashboard() {
             key={filter.value}
             variant={selectedFilter === filter.value ? 'default' : 'outline'}
             size="sm"
-            onClick={() => setSelectedFilter(filter.value)}
+            onClick={() => handleTimeFilterChange(filter.value)}
           >
             {filter.label}
           </Button>

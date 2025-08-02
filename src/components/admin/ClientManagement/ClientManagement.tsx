@@ -141,7 +141,7 @@ export function ClientManagement() {
         setSuccessMessage('Client created successfully!')
         // Navigate after a short delay to show the success message
         setTimeout(() => {
-          navigate('/admin/clients')
+          navigate('/admin')
         }, 1500)
       } else {
         setFormError(response.error || 'Failed to create client')
@@ -437,7 +437,7 @@ export function ClientManagement() {
 
       {/* Action Buttons */}
       <div className="flex justify-end gap-4 pt-6">
-        <Button variant="outline" onClick={() => navigate('/admin/clients')}>
+        <Button variant="outline" onClick={() => navigate('/admin')}>
           Cancel
         </Button>
         <Button 
