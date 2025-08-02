@@ -149,6 +149,13 @@ function AppRoutes() {
           </ClientRoute>
         </ProtectedRoute>
       } />
+      <Route path="/client/billing" element={
+        <ProtectedRoute>
+          <ClientRoute>
+            <Billing />
+          </ClientRoute>
+        </ProtectedRoute>
+      } />
       <Route path="/client/exceptions" element={
         <ProtectedRoute>
           <ClientRoute>

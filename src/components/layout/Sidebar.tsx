@@ -37,6 +37,7 @@ export function Sidebar({ className }: SidebarProps) {
     { icon: Workflow, label: 'Workflow ROI', href: '/client/workflows' },
     { icon: BarChart3, label: 'Reporting', href: '/client/reporting' },
     { icon: Key, label: 'Credentials', href: '/client/credentials' },
+    { icon: Receipt, label: 'Billing', href: '/client/billing' },
     { icon: AlertTriangle, label: 'Exceptions', href: '/client/exceptions' },
   ]
 
