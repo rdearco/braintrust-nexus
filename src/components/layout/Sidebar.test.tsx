@@ -40,8 +40,11 @@ describe('Sidebar', () => {
     render(<Sidebar />)
     
     expect(screen.getByText('Dashboard')).toBeInTheDocument()
-    expect(screen.getByText('Clients')).toBeInTheDocument()
     expect(screen.getByText('Users')).toBeInTheDocument()
+    expect(screen.getByText('Clients')).toBeInTheDocument()
+    expect(screen.getByText('Subscriptions')).toBeInTheDocument()
+    expect(screen.getByText('Credentials')).toBeInTheDocument()
+    expect(screen.getByText('Exceptions')).toBeInTheDocument()
   })
 
   it('shows client navigation items for client users', () => {
@@ -49,7 +52,7 @@ describe('Sidebar', () => {
     render(<Sidebar />)
     
     expect(screen.getByText('Dashboard')).toBeInTheDocument()
-    expect(screen.getByText('Workflows')).toBeInTheDocument()
+    expect(screen.getByText('Workflow ROI')).toBeInTheDocument()
     expect(screen.getByText('Exceptions')).toBeInTheDocument()
   })
 
@@ -58,8 +61,11 @@ describe('Sidebar', () => {
     render(<Sidebar />)
     
     expect(screen.getByText('Dashboard')).toBeInTheDocument()
-    expect(screen.getByText('Clients')).toBeInTheDocument()
     expect(screen.getByText('Users')).toBeInTheDocument()
+    expect(screen.getByText('Clients')).toBeInTheDocument()
+    expect(screen.getByText('Subscriptions')).toBeInTheDocument()
+    expect(screen.getByText('Credentials')).toBeInTheDocument()
+    expect(screen.getByText('Exceptions')).toBeInTheDocument()
   })
 
 
@@ -85,12 +91,18 @@ describe('Sidebar', () => {
     render(<Sidebar />)
     
     const dashboardLink = screen.getByText('Dashboard').closest('a')
-    const clientsLink = screen.getByText('Clients').closest('a')
     const usersLink = screen.getByText('Users').closest('a')
+    const clientsLink = screen.getByText('Clients').closest('a')
+    const subscriptionsLink = screen.getByText('Subscriptions').closest('a')
+    const credentialsLink = screen.getByText('Credentials').closest('a')
+    const exceptionsLink = screen.getByText('Exceptions').closest('a')
     
     expect(dashboardLink).toHaveAttribute('href', '/admin')
-    expect(clientsLink).toHaveAttribute('href', '/admin/clients')
     expect(usersLink).toHaveAttribute('href', '/admin/users')
+    expect(clientsLink).toHaveAttribute('href', '/admin/clients')
+    expect(subscriptionsLink).toHaveAttribute('href', '/admin/subscriptions')
+    expect(credentialsLink).toHaveAttribute('href', '/admin/credentials')
+    expect(exceptionsLink).toHaveAttribute('href', '/admin/exceptions')
   })
 
   it('navigates to correct routes for client', () => {
@@ -98,7 +110,7 @@ describe('Sidebar', () => {
     render(<Sidebar />)
     
     const dashboardLink = screen.getByText('Dashboard').closest('a')
-    const workflowsLink = screen.getByText('Workflows').closest('a')
+    const workflowsLink = screen.getByText('Workflow ROI').closest('a')
     const exceptionsLink = screen.getByText('Exceptions').closest('a')
     
     expect(dashboardLink).toHaveAttribute('href', '/client')
@@ -118,8 +130,11 @@ describe('Sidebar', () => {
     // Icons are rendered as SVG elements, we can check for their presence
     // by checking if the navigation items exist
     expect(screen.getByText('Dashboard')).toBeInTheDocument()
-    expect(screen.getByText('Clients')).toBeInTheDocument()
     expect(screen.getByText('Users')).toBeInTheDocument()
+    expect(screen.getByText('Clients')).toBeInTheDocument()
+    expect(screen.getByText('Subscriptions')).toBeInTheDocument()
+    expect(screen.getByText('Credentials')).toBeInTheDocument()
+    expect(screen.getByText('Exceptions')).toBeInTheDocument()
   })
 
 })

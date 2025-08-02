@@ -31,7 +31,7 @@ export function Sidebar({ className }: SidebarProps) {
 
   const clientNavItems = [
     { icon: LayoutDashboard, label: 'Dashboard', href: '/client' },
-    { icon: Workflow, label: 'Workflows', href: '/client/workflows' },
+    { icon: Workflow, label: 'Workflow ROI', href: '/client/workflows' },
     { icon: AlertTriangle, label: 'Exceptions', href: '/client/exceptions' },
   ]
 
