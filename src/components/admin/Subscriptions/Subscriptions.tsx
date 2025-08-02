@@ -3,45 +3,7 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { Plus } from 'lucide-react'
-
-const subscriptionPlans = [
-  {
-    id: '1',
-    name: 'Enterprise Pro',
-    pricingModel: 'Tiered',
-    contractLength: '12 months',
-    billingCadence: 'Monthly',
-    setupFee: 5000,
-    prepaymentPercent: 25,
-    cap: 100000,
-    overageCost: 150,
-    clients: 12
-  },
-  {
-    id: '2',
-    name: 'Business Plus',
-    pricingModel: 'Fixed',
-    contractLength: '6 months',
-    billingCadence: 'Quarterly',
-    setupFee: 2500,
-    prepaymentPercent: 15,
-    cap: 50000,
-    overageCost: 125,
-    clients: 28
-  },
-  {
-    id: '3',
-    name: 'Starter',
-    pricingModel: 'Usage',
-    contractLength: '3 months',
-    billingCadence: 'Monthly',
-    setupFee: 1000,
-    prepaymentPercent: 10,
-    cap: 25000,
-    overageCost: 100,
-    clients: 45
-  }
-]
+import { mockSubscriptionPlans } from '@/data/mockData'
 
 export function Subscriptions() {
   const formatCurrency = (amount: number) => {
@@ -81,11 +43,11 @@ export function Subscriptions() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {subscriptionPlans.map((plan) => (
+              {mockSubscriptionPlans.map((plan) => (
                 <TableRow key={plan.id}>
                   <TableCell className="font-medium">{plan.name}</TableCell>
                   <TableCell>{plan.pricingModel}</TableCell>
-                  <TableCell>{plan.contractLength}</TableCell>
+                  <TableCell>{plan.contractLength} { plan.contractCadence }{plan.contractLength > 0 ? "s" : ""}</TableCell>
                   <TableCell>{plan.billingCadence}</TableCell>
                   <TableCell>{formatCurrency(plan.setupFee)}</TableCell>
                   <TableCell>{plan.prepaymentPercent}%</TableCell>

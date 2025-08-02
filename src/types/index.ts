@@ -138,3 +138,17 @@ export interface TimeFilter {
   label: string
   value: '7d' | '30d' | 'mtd' | 'qtd' | 'ytd' | 'itd'
 }
+
+export interface SubscriptionPlan {
+  id: string
+  name: string
+  pricingModel: 'Tiered' | 'Fixed' | 'Usage'
+  contractLength: number
+  contractCadence: 'Month' | 'Quarter' | 'Year'
+  billingCadence: 'Monthly' | 'Quarterly' | 'Annually'
+  setupFee: number
+  prepaymentPercent: number
+  cap: number
+  overageCost: number
+  clients: number
+}

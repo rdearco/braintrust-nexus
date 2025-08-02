@@ -1,4 +1,4 @@
-import type { Client, User, Workflow, WorkflowException, DashboardMetrics } from '@/types'
+import type { Client, User, Workflow, WorkflowException, DashboardMetrics, SubscriptionPlan } from '@/types'
 
 export const mockClients: Client[] = [
   {
@@ -285,5 +285,47 @@ export const mockUsers: User[] = [
     companyId: 'client-3',
     createdAt: new Date('2024-05-01'),
     updatedAt: new Date('2024-12-01'),
+  }
+]
+
+export const mockSubscriptionPlans: SubscriptionPlan[] = [
+  {
+    id: '1',
+    name: 'Enterprise Pro',
+    pricingModel: 'Tiered',
+    contractLength: 2,
+    contractCadence: 'Quarter',
+    billingCadence: 'Monthly',
+    setupFee: 5000,
+    prepaymentPercent: 25,
+    cap: 100000,
+    overageCost: 150,
+    clients: 12
+  },
+  {
+    id: '2',
+    name: 'Business Plus',
+    pricingModel: 'Fixed',
+    contractLength: 6,
+    contractCadence: 'Month',
+    billingCadence: 'Quarterly',
+    setupFee: 2500,
+    prepaymentPercent: 15,
+    cap: 50000,
+    overageCost: 125,
+    clients: 28
+  },
+  {
+    id: '3',
+    name: 'Starter',
+    pricingModel: 'Usage',
+    contractLength: 3,
+    contractCadence: 'Year',
+    billingCadence: 'Monthly',
+    setupFee: 1000,
+    prepaymentPercent: 10,
+    cap: 25000,
+    overageCost: 100,
+    clients: 45
   }
 ]

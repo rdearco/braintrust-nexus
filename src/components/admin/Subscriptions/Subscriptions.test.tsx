@@ -39,9 +39,9 @@ describe('Subscriptions', () => {
     expect(screen.getByText('Usage')).toBeInTheDocument()
     
     // Check contract lengths
-    expect(screen.getByText('12 months')).toBeInTheDocument()
-    expect(screen.getByText('6 months')).toBeInTheDocument()
-    expect(screen.getByText('3 months')).toBeInTheDocument()
+    expect(screen.getByText('2 Quarters')).toBeInTheDocument()
+    expect(screen.getByText('6 Months')).toBeInTheDocument()
+    expect(screen.getByText('3 Years')).toBeInTheDocument()
   })
 
   it('displays billing cadence correctly', () => {

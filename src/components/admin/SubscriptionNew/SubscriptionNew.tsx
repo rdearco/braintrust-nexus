@@ -11,6 +11,7 @@ export function SubscriptionNew() {
     planName: '',
     pricingModel: 'Fixed',
     contractLength: '',
+    contractCadence: 'Month',
     billingCadence: 'AIR Direct',
     billingFrequency: 'Month',
     setupFee: '',
@@ -46,7 +47,7 @@ export function SubscriptionNew() {
             {/* Plan Name */}
             <div className="space-y-2">
               <Input
-                placeholder="Enter plan name"
+                placeholder="Plan Name"
                 value={formData.planName}
                 onChange={(e) => handleInputChange('planName', e.target.value)}
                 className="w-full"
@@ -69,15 +70,27 @@ export function SubscriptionNew() {
 
             {/* Contract Length */}
             <div className="space-y-2">
-              <div className="relative">
-                <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">$</span>
-                <Input
-                  type="number"
-                  value={formData.contractLength}
-                  onChange={(e) => handleInputChange('contractLength', e.target.value)}
-                  className="pl-8"
-                />
-              </div>
+              <Input
+                placeholder="Contract Length"
+                type="number"
+                value={formData.contractLength}
+                onChange={(e) => handleInputChange('contractLength', e.target.value)}
+                className="w-full"
+              />
+            </div>
+
+            {/* Contract Frequency */}
+            <div className="space-y-2">
+              <Select value={formData.contractCadence} onValueChange={(value) => handleInputChange('contractCadence', value)}>
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Month">Month</SelectItem>
+                  <SelectItem value="Quarter">Quarter</SelectItem>
+                  <SelectItem value="Year">Year</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
 
             {/* Billing Cadence */}
@@ -88,9 +101,7 @@ export function SubscriptionNew() {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="AIR Direct">AIR Direct</SelectItem>
-                  <SelectItem value="Monthly">Monthly</SelectItem>
-                  <SelectItem value="Quarterly">Quarterly</SelectItem>
-                  <SelectItem value="Annually">Annually</SelectItem>
+                  <SelectItem value="Nexus Base">Nexus Base</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -115,6 +126,7 @@ export function SubscriptionNew() {
                 <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">$</span>
                 <Input
                   type="number"
+                  placeholder='Setup Fee'
                   value={formData.setupFee}
                   onChange={(e) => handleInputChange('setupFee', e.target.value)}
                   className="pl-8"
@@ -127,6 +139,7 @@ export function SubscriptionNew() {
               <div className="relative">
                 <Input
                   type="number"
+                  placeholder='Prepayment %'
                   value={formData.prepaymentPercent}
                   onChange={(e) => handleInputChange('prepaymentPercent', e.target.value)}
                   className="pr-8"
@@ -141,6 +154,7 @@ export function SubscriptionNew() {
                 <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">$</span>
                 <Input
                   type="number"
+                  placeholder='Cap Amount'
                   value={formData.cap}
                   onChange={(e) => handleInputChange('cap', e.target.value)}
                   className="pl-8"
@@ -154,6 +168,7 @@ export function SubscriptionNew() {
                 <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">$</span>
                 <Input
                   type="number"
+                  placeholder='Overage Cost'
                   value={formData.overageCost}
                   onChange={(e) => handleInputChange('overageCost', e.target.value)}
                   className="pl-8"
