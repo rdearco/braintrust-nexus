@@ -23,19 +23,21 @@ describe('SubscriptionNew', () => {
     render(<SubscriptionNew />, { user: mockAdminUser })
     
     expect(screen.getByText('Add New Plan')).toBeInTheDocument()
-    expect(screen.getByPlaceholderText('Enter plan name')).toBeInTheDocument()
+    expect(screen.getByPlaceholderText('Plan Name')).toBeInTheDocument()
   })
 
   it('displays all form fields', () => {
     render(<SubscriptionNew />, { user: mockAdminUser })
     
     // Text input
-    expect(screen.getByPlaceholderText('Enter plan name')).toBeInTheDocument()
+    expect(screen.getByPlaceholderText('Plan Name')).toBeInTheDocument()
     
     // Dropdowns should show selected values as text content
     expect(screen.getByText('Fixed')).toBeInTheDocument()
     expect(screen.getByText('AIR Direct')).toBeInTheDocument()
-    expect(screen.getByText('Month')).toBeInTheDocument()
+    // There are two "Month" values (contractCadence and billingFrequency)
+    const monthElements = screen.getAllByText('Month')
+    expect(monthElements).toHaveLength(2)
     
     // Number inputs with $ symbols
     const dollarSigns = screen.getAllByText('$')
@@ -56,7 +58,7 @@ describe('SubscriptionNew', () => {
     const user = userEvent.setup()
     render(<SubscriptionNew />, { user: mockAdminUser })
     
-    const planNameInput = screen.getByPlaceholderText('Enter plan name')
+    const planNameInput = screen.getByPlaceholderText('Plan Name')
     await user.type(planNameInput, 'Test Plan')
     
     expect(planNameInput).toHaveValue('Test Plan')
@@ -97,21 +99,23 @@ describe('SubscriptionNew', () => {
   it('displays dropdown components', () => {
     render(<SubscriptionNew />, { user: mockAdminUser })
     
-    // Find the combobox elements (there are 3 of them)
+    // Find the combobox elements (there are 4 of them)
     const comboboxes = screen.getAllByRole('combobox')
-    expect(comboboxes).toHaveLength(3)
+    expect(comboboxes).toHaveLength(4)
     
     // Check that default values are displayed
     expect(screen.getByText('Fixed')).toBeInTheDocument()
     expect(screen.getByText('AIR Direct')).toBeInTheDocument()
-    expect(screen.getByText('Month')).toBeInTheDocument()
+    // There are two "Month" values (contractCadence and billingFrequency)
+    const monthElements = screen.getAllByText('Month')
+    expect(monthElements).toHaveLength(2)
   })
 
   it('renders form in grid layout', () => {
     render(<SubscriptionNew />, { user: mockAdminUser })
     
     // Check that the form container exists
-    const planNameInput = screen.getByPlaceholderText('Enter plan name')
+    const planNameInput = screen.getByPlaceholderText('Plan Name')
     expect(planNameInput).toBeInTheDocument()
     
     // The grid layout should be applied via CSS classes

@@ -3,15 +3,43 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { Plus } from 'lucide-react'
-import { mockSubscriptionPlans } from '@/data/mockData'
+import { useSubscriptions } from '@/hooks/useSubscriptions'
 
 export function Subscriptions() {
+  const { plans, loading, error } = useSubscriptions({ limit: 100 })
+
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
       currency: 'USD',
       maximumFractionDigits: 0,
     }).format(amount)
+  }
+
+  if (loading) {
+    return (
+      <div className="p-6 space-y-6">
+        <div className="flex justify-between items-center">
+          <h1 className="text-2xl font-bold">Plan Manager</h1>
+        </div>
+        <div className="flex items-center justify-center h-64">
+          <div className="text-lg">Loading subscription plans...</div>
+        </div>
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="p-6 space-y-6">
+        <div className="flex justify-between items-center">
+          <h1 className="text-2xl font-bold">Plan Manager</h1>
+        </div>
+        <div className="flex items-center justify-center h-64">
+          <div className="text-lg text-red-600">{error}</div>
+        </div>
+      </div>
+    )
   }
 
   return (
@@ -43,7 +71,7 @@ export function Subscriptions() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {mockSubscriptionPlans.map((plan) => (
+              {plans.map((plan) => (
                 <TableRow key={plan.id}>
                   <TableCell className="font-medium">{plan.name}</TableCell>
                   <TableCell>{plan.pricingModel}</TableCell>
