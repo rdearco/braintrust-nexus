@@ -100,7 +100,7 @@ You are working on the Braintrust Nexus platform - an admin application with two
 - Run tests before committing changes
 
 ## Access Control & Roles
-- **Admin Role**: Full access to all clients and user management
+- **Admin Role**: Full access to all clients and manage users
 - **Solutions Engineer (SE)**: Access to assigned clients only  
 - **Client Role**: Access to own data and workflows only
 

@@ -388,7 +388,7 @@ export function UserManagement() {
     return (
       <div className="p-6 space-y-6">
         <div className="flex justify-between items-center">
-          <h1 className="text-3xl font-bold">User Management</h1>
+          <h1 className="text-3xl font-bold">Manage Users</h1>
         </div>
         <div className="flex items-center justify-center h-64">
           <div className="text-lg">Loading users...</div>
@@ -402,7 +402,7 @@ export function UserManagement() {
     return (
       <div className="p-6 space-y-6">
         <div className="flex justify-between items-center">
-          <h1 className="text-3xl font-bold">User Management</h1>
+          <h1 className="text-3xl font-bold">Manage Users</h1>
         </div>
         <div className="flex items-center justify-center h-64">
           <div className="text-lg text-red-600">Error loading users: {usersError}</div>
@@ -414,7 +414,7 @@ export function UserManagement() {
   return (
     <div className="p-6 space-y-6">
       <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-bold">User Management</h1>
+        <h1 className="text-3xl font-bold">Manage Users</h1>
         <Button
           variant="default"
           size="sm"

@@ -89,7 +89,7 @@ describe('UserManagement', () => {
   it('renders page title and add user button', () => {
     render(<UserManagement />, { user: mockAdminUser })
     
-    expect(screen.getByText('User Management')).toBeInTheDocument()
+    expect(screen.getByText('Manage Users')).toBeInTheDocument()
     expect(screen.getByText('Add User')).toBeInTheDocument()
   })
 

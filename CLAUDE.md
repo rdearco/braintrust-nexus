@@ -40,7 +40,7 @@ This is a test project for building the Braintrust Nexus platform - an admin app
    - Agent configuration and monitoring
 
 ## Access Control
-- **Admin Role**: Full access to all clients and user management
+- **Admin Role**: Full access to all clients and manage users
 - **Solutions Engineer (SE)**: Access to assigned clients only
 - **Client Role**: Access to own data and workflows only
 
@@ -93,7 +93,7 @@ The project uses a service layer pattern with mock API services that simulate re
   - Create, update, and delete clients
   - Get dashboard metrics aggregated from client data
 
-- **userApi** (`src/services/userApi.ts`): Handles all user management operations
+- **userApi** (`src/services/userApi.ts`): Handles all manage users operations
   - Get all users with pagination, role filtering, and search
   - Get individual user details
   - Create, update, and delete users
