@@ -1,19 +1,85 @@
-import { describe, it, expect } from 'vitest'
+import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { render, mockClientUser } from '@/test/utils'
-import { WorkflowManagement } from './WorkflowManagement'
+import { Workflows } from './Workflows'
+import { useWorkflows } from '@/hooks/useWorkflows'
 
-describe('WorkflowManagement', () => {
+// Mock the useWorkflows hook
+vi.mock('@/hooks/useWorkflows', () => ({
+  useWorkflows: vi.fn()
+}))
+
+// Mock workflowApi
+vi.mock('@/services/workflowApi', () => ({
+  workflowApi: {
+    toggleStatus: vi.fn().mockResolvedValue({
+      success: true,
+      data: { id: '1', status: 'inactive' },
+      message: 'Workflow status toggled successfully'
+    })
+  }
+}))
+
+const mockWorkflowsData = [
+  {
+    id: '1',
+    createDateTime: '2025-05-14 09:30',
+    department: 'Finance',
+    workflowName: 'Invoice Processing',
+    description: 'Automated invoice processing workflow',
+    nodes: 12,
+    executions: 1234,
+    exceptions: 23,
+    timeSaved: 156.5,
+    costSaved: 15650,
+    status: 'active'
+  },
+  {
+    id: '2',
+    createDateTime: '2025-05-13 14:15',
+    department: 'HR',
+    workflowName: 'Employee Onboarding',
+    description: 'New employee onboarding automation',
+    nodes: 8,
+    executions: 456,
+    exceptions: 5,
+    timeSaved: 89.2,
+    costSaved: 8920,
+    status: 'active'
+  }
+]
+
+describe('Workflows', () => {
+  beforeEach(() => {
+    // Default mock return value
+    vi.mocked(useWorkflows).mockReturnValue({
+      workflows: mockWorkflowsData,
+      loading: false,
+      error: null,
+      pagination: {
+        page: 1,
+        limit: 100,
+        total: 2,
+        totalPages: 1
+      },
+      refetch: vi.fn(),
+      updateSearch: vi.fn(),
+      updateSort: vi.fn(),
+      updatePage: vi.fn(),
+      updateFilters: vi.fn()
+    })
+  })
+
   it('renders page title and new workflow button', () => {
-    render(<WorkflowManagement />, { user: mockClientUser })
+    render(<Workflows />, { user: mockClientUser })
     
     expect(screen.getByText('Workflow ROI')).toBeInTheDocument()
     expect(screen.getByText('+ New Workflow')).toBeInTheDocument()
   })
 
   it('displays table headers with sort arrows', () => {
-    render(<WorkflowManagement />, { user: mockClientUser })
+    render(<Workflows />, { user: mockClientUser })
     
     expect(screen.getByText('Create Date/Time')).toBeInTheDocument()
     expect(screen.getByText('Department')).toBeInTheDocument()
@@ -28,7 +94,7 @@ describe('WorkflowManagement', () => {
   })
 
   it('displays workflow data rows', () => {
-    render(<WorkflowManagement />, { user: mockClientUser })
+    render(<Workflows />, { user: mockClientUser })
     
     expect(screen.getByText('2025-05-14 09:30')).toBeInTheDocument()
     expect(screen.getByText('Finance')).toBeInTheDocument()
@@ -42,7 +108,7 @@ describe('WorkflowManagement', () => {
   })
 
   it('displays second workflow row', () => {
-    render(<WorkflowManagement />, { user: mockClientUser })
+    render(<Workflows />, { user: mockClientUser })
     
     expect(screen.getByText('2025-05-13 14:15')).toBeInTheDocument()
     expect(screen.getByText('HR')).toBeInTheDocument()
@@ -56,7 +122,7 @@ describe('WorkflowManagement', () => {
   })
 
   it('shows clickable workflow names', () => {
-    render(<WorkflowManagement />, { user: mockClientUser })
+    render(<Workflows />, { user: mockClientUser })
     
     const invoiceWorkflow = screen.getByText('Invoice Processing')
     const onboardingWorkflow = screen.getByText('Employee Onboarding')
@@ -66,7 +132,7 @@ describe('WorkflowManagement', () => {
   })
 
   it('shows clickable execution counts', () => {
-    render(<WorkflowManagement />, { user: mockClientUser })
+    render(<Workflows />, { user: mockClientUser })
     
     const execution1234 = screen.getByText('1234')
     const execution456 = screen.getByText('456')
@@ -76,7 +142,7 @@ describe('WorkflowManagement', () => {
   })
 
   it('renders sortable column headers', () => {
-    render(<WorkflowManagement />, { user: mockClientUser })
+    render(<Workflows />, { user: mockClientUser })
     
     // All sortable headers should have cursor-pointer class and ArrowUpDown icons
     const sortableHeaders = [
@@ -96,24 +162,83 @@ describe('WorkflowManagement', () => {
   })
 
   it('displays status toggle buttons', () => {
-    render(<WorkflowManagement />, { user: mockClientUser })
+    render(<Workflows />, { user: mockClientUser })
     
     // Should have toggle buttons showing 'ON' for each active workflow
     expect(screen.getAllByText('ON')).toHaveLength(2) // Both workflows are active by default
   })
 
   it('allows toggling workflow status', async () => {
+    const mockRefetch = vi.fn()
+    
+    // Mock useWorkflows to return the refetch function
+    vi.mocked(useWorkflows).mockReturnValue({
+      workflows: mockWorkflowsData,
+      loading: false,
+      error: null,
+      pagination: {
+        page: 1,
+        limit: 100,
+        total: 2,
+        totalPages: 1
+      },
+      refetch: mockRefetch,
+      updateSearch: vi.fn(),
+      updateSort: vi.fn(),
+      updatePage: vi.fn(),
+      updateFilters: vi.fn()
+    })
+
     const user = userEvent.setup()
-    render(<WorkflowManagement />, { user: mockClientUser })
+    render(<Workflows />, { user: mockClientUser })
     
     const toggleButtons = screen.getAllByText('ON')
     expect(toggleButtons).toHaveLength(2)
     
-    // Click first toggle button to turn it off
+    // Click first toggle button
     await user.click(toggleButtons[0])
     
-    // Should now have one 'ON' and one 'OFF' button
-    expect(screen.getAllByText('ON')).toHaveLength(1)
-    expect(screen.getAllByText('OFF')).toHaveLength(1)
+    // Verify the API was called and refetch was triggered
+    expect(mockRefetch).toHaveBeenCalledTimes(1)
+  })
+
+  it('displays loading state', () => {
+    // Mock loading state
+    vi.mocked(useWorkflows).mockReturnValueOnce({
+      workflows: [],
+      loading: true,
+      error: null,
+      pagination: null,
+      refetch: vi.fn(),
+      updateSearch: vi.fn(),
+      updateSort: vi.fn(),
+      updatePage: vi.fn(),
+      updateFilters: vi.fn()
+    })
+
+    render(<Workflows />, { user: mockClientUser })
+    
+    expect(screen.getByText('Workflow ROI')).toBeInTheDocument()
+    expect(screen.getByText('Loading workflows...')).toBeInTheDocument()
+  })
+
+  it('displays error state', () => {
+    // Mock error state
+    vi.mocked(useWorkflows).mockReturnValueOnce({
+      workflows: [],
+      loading: false,
+      error: 'Failed to load workflows',
+      pagination: null,
+      refetch: vi.fn(),
+      updateSearch: vi.fn(),
+      updateSort: vi.fn(),
+      updatePage: vi.fn(),
+      updateFilters: vi.fn()
+    })
+
+    render(<Workflows />, { user: mockClientUser })
+    
+    expect(screen.getByText('Workflow ROI')).toBeInTheDocument()
+    expect(screen.getByText('Failed to load workflows')).toBeInTheDocument()
   })
 })

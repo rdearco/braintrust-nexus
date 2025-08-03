@@ -152,3 +152,17 @@ export interface SubscriptionPlan {
   overageCost: number
   clients: number
 }
+
+export interface WorkflowData {
+  id: string
+  createDateTime: string
+  department: string
+  workflowName: string
+  description: string
+  nodes: number
+  executions: number
+  exceptions: number
+  timeSaved: number
+  costSaved: number
+  status: string
+}

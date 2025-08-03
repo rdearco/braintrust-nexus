@@ -329,3 +329,32 @@ export const mockSubscriptionPlans: SubscriptionPlan[] = [
     clients: 45
   }
 ]
+
+export const mockWorkflowData = [
+  {
+    id: '1',
+    createDateTime: '2025-05-14 09:30',
+    department: 'Finance',
+    workflowName: 'Invoice Processing',
+    description: 'Automated invoice processing workflow',
+    nodes: 12,
+    executions: 1234,
+    exceptions: 23,
+    timeSaved: 156.5,
+    costSaved: 15650,
+    status: 'active'
+  },
+  {
+    id: '2',
+    createDateTime: '2025-05-13 14:15',
+    department: 'HR',
+    workflowName: 'Employee Onboarding',
+    description: 'New employee onboarding automation',
+    nodes: 8,
+    executions: 456,
+    exceptions: 5,
+    timeSaved: 89.2,
+    costSaved: 8920,
+    status: 'active'
+  }
+]

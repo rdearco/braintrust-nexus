@@ -13,7 +13,7 @@ import { Exceptions } from '@/components/admin/Exceptions/Exceptions'
 import { Credentials } from '@/components/admin/Credentials/Credentials'
 import { Billing } from '@/components/admin/Billing/Billing'
 import { ClientDashboard } from '@/components/client/Dashboard/Dashboard'
-import { WorkflowManagement } from '@/components/client/WorkflowManagement/WorkflowManagement'
+import { Workflows } from '@/components/client/Workflows/Workflows'
 import { Reporting } from '@/components/client/Reporting/Reporting'
 
 import './index.css'
@@ -139,7 +139,7 @@ function AppRoutes() {
       <Route path="/client/workflows" element={
         <ProtectedRoute>
           <ClientRoute>
-            <WorkflowManagement />
+            <Workflows />
           </ClientRoute>
         </ProtectedRoute>
       } />
