@@ -1,9 +1,75 @@
-import { describe, it, expect } from 'vitest'
+import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { screen } from '@testing-library/react'
 import { render, mockAdminUser } from '@/test/utils'
 import { Subscriptions } from './Subscriptions'
+import { useSubscriptions } from '@/hooks/useSubscriptions'
+
+// Mock the useSubscriptions hook
+vi.mock('@/hooks/useSubscriptions', () => ({
+  useSubscriptions: vi.fn()
+}))
+
+const mockPlansData = [
+  {
+    id: '1',
+    name: 'Enterprise Pro',
+    pricingModel: 'Tiered' as const,
+    contractLength: 2,
+    contractCadence: 'Quarter' as const,
+    billingCadence: 'Monthly' as const,
+    setupFee: 5000,
+    prepaymentPercent: 25,
+    cap: 100000,
+    overageCost: 150,
+    clients: 12
+  },
+  {
+    id: '2',
+    name: 'Business Plus',
+    pricingModel: 'Fixed' as const,
+    contractLength: 6,
+    contractCadence: 'Month' as const,
+    billingCadence: 'Quarterly' as const,
+    setupFee: 2500,
+    prepaymentPercent: 15,
+    cap: 50000,
+    overageCost: 125,
+    clients: 28
+  },
+  {
+    id: '3',
+    name: 'Starter',
+    pricingModel: 'Usage' as const,
+    contractLength: 3,
+    contractCadence: 'Year' as const,
+    billingCadence: 'Monthly' as const,
+    setupFee: 1000,
+    prepaymentPercent: 10,
+    cap: 25000,
+    overageCost: 100,
+    clients: 45
+  }
+]
 
 describe('Subscriptions', () => {
+  beforeEach(() => {
+    // Default mock return value
+    vi.mocked(useSubscriptions).mockReturnValue({
+      plans: mockPlansData,
+      loading: false,
+      error: null,
+      pagination: {
+        page: 1,
+        limit: 100,
+        total: 3,
+        totalPages: 1
+      },
+      updateSearch: vi.fn(),
+      updateSort: vi.fn(),
+      refetch: vi.fn()
+    })
+  })
+
   it('renders page title and add plan button', () => {
     render(<Subscriptions />, { user: mockAdminUser })
     
@@ -89,5 +155,41 @@ describe('Subscriptions', () => {
     expect(screen.getByText('12')).toBeInTheDocument()
     expect(screen.getByText('28')).toBeInTheDocument()
     expect(screen.getByText('45')).toBeInTheDocument()
+  })
+
+  it('displays loading state', () => {
+    // Mock loading state
+    vi.mocked(useSubscriptions).mockReturnValueOnce({
+      plans: [],
+      loading: true,
+      error: null,
+      pagination: null,
+      updateSearch: vi.fn(),
+      updateSort: vi.fn(),
+      refetch: vi.fn()
+    })
+
+    render(<Subscriptions />, { user: mockAdminUser })
+    
+    expect(screen.getByText('Plan Manager')).toBeInTheDocument()
+    expect(screen.getByText('Loading subscription plans...')).toBeInTheDocument()
+  })
+
+  it('displays error state', () => {
+    // Mock error state
+    vi.mocked(useSubscriptions).mockReturnValueOnce({
+      plans: [],
+      loading: false,
+      error: 'Failed to load plans',
+      pagination: null,
+      updateSearch: vi.fn(),
+      updateSort: vi.fn(),
+      refetch: vi.fn()
+    })
+
+    render(<Subscriptions />, { user: mockAdminUser })
+    
+    expect(screen.getByText('Plan Manager')).toBeInTheDocument()
+    expect(screen.getByText('Failed to load plans')).toBeInTheDocument()
   })
 })

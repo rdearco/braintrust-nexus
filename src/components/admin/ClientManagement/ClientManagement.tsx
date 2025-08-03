@@ -102,13 +102,94 @@ export function ClientManagement() {
     setFormError('')
     setSuccessMessage('')
 
+    // Basic validation for required fields
     if (!companyName.trim() || !companyUrl.trim()) {
       setFormError('Please fill in required fields: Company Name and Company URL')
-      // Scroll to error message after it's rendered
       setTimeout(() => {
         errorMessageRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
       }, 100)
       return
+    }
+
+    // URL validation
+    const urlPattern = /^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/
+    if (!urlPattern.test(companyUrl.trim())) {
+      setFormError('Please enter a valid company URL (e.g., https://company.com)')
+      setTimeout(() => {
+        errorMessageRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+      }, 100)
+      return
+    }
+
+    // Email validation for users
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    const usersWithData = users.filter(user => user.name.trim() || user.email.trim() || user.phone.trim())
+    
+    for (const user of usersWithData) {
+      if (user.email.trim() && !emailPattern.test(user.email.trim())) {
+        setFormError(`Please enter a valid email address for user: ${user.name || 'Unnamed user'}`)
+        setTimeout(() => {
+          errorMessageRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+        }, 100)
+        return
+      }
+
+      // Phone validation (basic pattern for US phone numbers)
+      const phonePattern = /^[\+]?[\d\s\(\)\-\.]{10,}$/
+      if (user.phone.trim() && !phonePattern.test(user.phone.trim().replace(/\s/g, ''))) {
+        setFormError(`Please enter a valid phone number for user: ${user.name || 'Unnamed user'}`)
+        setTimeout(() => {
+          errorMessageRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+        }, 100)
+        return
+      }
+
+      // Require name and email for users with any data
+      if ((user.email.trim() || user.phone.trim()) && !user.name.trim()) {
+        setFormError('Please enter a name for all users with email or phone information')
+        setTimeout(() => {
+          errorMessageRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+        }, 100)
+        return
+      }
+
+      if (user.name.trim() && !user.email.trim()) {
+        setFormError(`Please enter an email address for user: ${user.name}`)
+        setTimeout(() => {
+          errorMessageRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+        }, 100)
+        return
+      }
+    }
+
+    // Email validation for Solutions Engineers
+    const seWithData = solutionsEngineers.filter(se => se.name.trim() || se.email.trim())
+    
+    for (const se of seWithData) {
+      if (se.email.trim() && !emailPattern.test(se.email.trim())) {
+        setFormError(`Please enter a valid email address for Solutions Engineer: ${se.name || 'Unnamed SE'}`)
+        setTimeout(() => {
+          errorMessageRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+        }, 100)
+        return
+      }
+
+      // Require both name and email for SEs with any data
+      if (se.name.trim() && !se.email.trim()) {
+        setFormError(`Please enter an email address for Solutions Engineer: ${se.name}`)
+        setTimeout(() => {
+          errorMessageRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+        }, 100)
+        return
+      }
+
+      if (se.email.trim() && !se.name.trim()) {
+        setFormError('Please enter a name for all Solutions Engineers with email information')
+        setTimeout(() => {
+          errorMessageRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+        }, 100)
+        return
+      }
     }
 
     setIsSubmitting(true)

@@ -3,6 +3,7 @@ import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { render, mockAdminUser } from '@/test/utils'
 import { SubscriptionNew } from './SubscriptionNew'
+import { subscriptionApi } from '@/services/subscriptionApi'
 
 // Mock useNavigate
 const mockNavigate = vi.fn()
@@ -14,9 +15,21 @@ vi.mock('react-router-dom', async () => {
   }
 })
 
+// Mock subscriptionApi
+vi.mock('@/services/subscriptionApi', () => ({
+  subscriptionApi: {
+    create: vi.fn().mockResolvedValue({
+      success: true,
+      data: { id: 'test-plan', name: 'Test Plan' },
+      message: 'Plan created successfully'
+    })
+  }
+}))
+
 describe('SubscriptionNew', () => {
   beforeEach(() => {
     mockNavigate.mockClear()
+    vi.mocked(subscriptionApi.create).mockClear()
   })
 
   it('renders page title and form', () => {
@@ -86,14 +99,51 @@ describe('SubscriptionNew', () => {
     expect(mockNavigate).toHaveBeenCalledWith('/admin/subscriptions')
   })
 
-  it('navigates back on create plan', async () => {
+  it('navigates back on create plan with valid data', async () => {
+    const user = userEvent.setup()
+    render(<SubscriptionNew />, { user: mockAdminUser })
+    
+    // Fill in required fields with valid data
+    const planNameInput = screen.getByPlaceholderText('Plan Name')
+    await user.type(planNameInput, 'Test Plan')
+    
+    const contractLengthInput = screen.getByPlaceholderText('Contract Length')
+    await user.type(contractLengthInput, '12')
+    
+    const setupFeeInput = screen.getByPlaceholderText('Setup Fee')
+    await user.type(setupFeeInput, '1000')
+    
+    const prepaymentInput = screen.getByPlaceholderText('Prepayment %')
+    await user.type(prepaymentInput, '25')
+    
+    const capInput = screen.getByPlaceholderText('Cap Amount')
+    await user.type(capInput, '50000')
+    
+    const overageInput = screen.getByPlaceholderText('Overage Cost')
+    await user.type(overageInput, '150')
+    
+    const createButton = screen.getByText('Create Plan')
+    await user.click(createButton)
+    
+    // Wait for success message to appear
+    expect(await screen.findByText('Subscription plan created successfully!')).toBeInTheDocument()
+    
+    // Wait for the navigation (happens after 1.5 second delay)
+    await new Promise(resolve => setTimeout(resolve, 1600))
+    
+    expect(mockNavigate).toHaveBeenCalledWith('/admin/subscriptions')
+  })
+
+  it('shows validation error when plan name is missing', async () => {
     const user = userEvent.setup()
     render(<SubscriptionNew />, { user: mockAdminUser })
     
     const createButton = screen.getByText('Create Plan')
     await user.click(createButton)
     
-    expect(mockNavigate).toHaveBeenCalledWith('/admin/subscriptions')
+    // Should show validation error instead of navigating
+    expect(screen.getByText('Please fill in required field: Plan Name')).toBeInTheDocument()
+    expect(mockNavigate).not.toHaveBeenCalled()
   })
 
   it('displays dropdown components', () => {
