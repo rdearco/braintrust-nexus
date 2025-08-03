@@ -25,16 +25,35 @@ This is a test project for building the Braintrust Nexus platform - an admin app
    - Add new client functionality
 
 2. **Client Management**
-   - Client detail pages
+   - Client detail pages with comprehensive form validation
+   - Add new clients with department, user, and solutions engineer assignment
+   - Email, phone, and URL validation
    - Workflow management
    - Exception handling
    - ROI tracking
 
+3. **User Management**
+   - Complete CRUD operations for users
+   - Role-based access control (Admin, SE, Client)
+   - Client assignment for Solutions Engineers
+   - Cost/bill rate management
+   - Form validation and error handling
+
+4. **Subscription Management**
+   - Create and manage subscription plans
+   - Pricing model configuration (Tiered, Fixed, Usage)
+   - Contract length and billing cadence setup
+   - Setup fees, prepayment percentages, and overage costs
+   - Client assignment tracking
+
 ### Client App
-1. **Workflow Management**
-   - View and manage automated workflows
-   - Exception reporting and resolution
-   - Execution history
+1. **Workflows** (renamed from WorkflowManagement)
+   - View and manage automated workflows with ROI tracking
+   - Create new workflows with comprehensive form validation
+   - Edit existing workflows by clicking workflow names
+   - Toggle workflow status (active/inactive/testing/development)
+   - Sort by various fields (date, department, name, metrics)
+   - Track time saved, cost saved, nodes, executions, and exceptions
 
 2. **Custom Agents**
    - Agent configuration and monitoring
@@ -82,7 +101,16 @@ npm run lint
 npm run test
 ```
 
-## API Services & Data Management
+## Data Management
+
+### Centralized Mock Data (`src/data/mockData.ts`)
+All mock data is centralized in a single file for consistency:
+- **mockClients**: Client company data with departments and workflows
+- **mockUsers**: User accounts with role-based permissions
+- **mockSubscriptionPlans**: Subscription plan configurations
+- **mockWorkflowData**: Workflow execution and ROI data
+- **mockWorkflows**: Detailed workflow definitions with nodes and executions
+- **mockExceptions**: Workflow exception tracking
 
 ### Service Layer Architecture
 The project uses a service layer pattern with mock API services that simulate real backend interactions:
@@ -93,11 +121,24 @@ The project uses a service layer pattern with mock API services that simulate re
   - Create, update, and delete clients
   - Get dashboard metrics aggregated from client data
 
-- **userApi** (`src/services/userApi.ts`): Handles all manage users operations
+- **userApi** (`src/services/userApi.ts`): Handles all user management operations
   - Get all users with pagination, role filtering, and search
   - Get individual user details
   - Create, update, and delete users
   - Get user statistics by role
+
+- **subscriptionApi** (`src/services/subscriptionApi.ts`): Handles subscription plan management
+  - Get all subscription plans with pagination, filtering, and sorting
+  - Get individual plan details
+  - Create, update, and delete subscription plans
+  - Get subscription statistics
+
+- **workflowApi** (`src/services/workflowApi.ts`): Handles workflow management operations
+  - Get all workflows with pagination, filtering, and sorting
+  - Get individual workflow details
+  - Create, update, and delete workflows
+  - Toggle workflow status (active/inactive)
+  - Get workflow statistics
 
 ### Custom Hooks
 React hooks provide clean integration between components and API services:
@@ -112,10 +153,32 @@ React hooks provide clean integration between components and API services:
   - User statistics hook
   - Individual user data hook
 
+- **useSubscriptions** (`src/hooks/useSubscriptions.ts`): Subscription plan data management
+  - Pagination, search, and sorting state management
+  - Loading and error states
+  - Subscription statistics hook
+
+- **useWorkflows** (`src/hooks/useWorkflows.ts`): Workflow data management
+  - Pagination, search, and filtering state management
+  - Loading and error states
+  - Department and status filtering
+  - Individual workflow data hook
+  - Workflow statistics hook
+
+### Key TypeScript Interfaces (`src/types/index.ts`)
+- **User**: User account with role-based permissions and client assignments
+- **Client**: Company information with departments and workflow metrics
+- **WorkflowData**: Simplified workflow data for ROI tracking and management
+- **Workflow**: Detailed workflow with nodes, executions, and exceptions
+- **SubscriptionPlan**: Subscription configuration with pricing and billing
+- **WorkflowException**: Exception tracking and resolution
+
 ### Testing Strategy
 - Comprehensive unit tests for all API services
 - Component tests mock the service hooks for isolation
 - Test files follow the pattern: `*.test.ts` for services, `*.test.tsx` for components
+- Vitest with proper mocking patterns for TypeScript compliance
+- React Testing Library for component testing
 
 ## Project Structure
 ```
@@ -123,12 +186,26 @@ React hooks provide clean integration between components and API services:
 ├── src/
 │   ├── components/
 │   │   ├── admin/          # Admin-specific components
+│   │   │   ├── Dashboard/  # Admin dashboard with metrics
+│   │   │   ├── ClientManagement/  # Add new clients with validation
+│   │   │   ├── UserManagement/    # Full CRUD user management
+│   │   │   ├── Subscriptions/     # Subscription plan management
+│   │   │   ├── SubscriptionNew/   # Create subscription plans
+│   │   │   ├── Exceptions/        # Exception handling
+│   │   │   ├── Credentials/       # Credential management
+│   │   │   └── Billing/          # Billing management
 │   │   ├── client/         # Client-specific components
+│   │   │   ├── Dashboard/  # Client dashboard view
+│   │   │   ├── Workflows/  # Workflow ROI management (renamed)
+│   │   │   ├── Reporting/  # Reporting and analytics
+│   │   │   ├── Exceptions/ # Exception management
+│   │   │   ├── Credentials/# Credential management
+│   │   │   └── Billing/    # Billing view
 │   │   ├── shared/         # Shared components
 │   │   └── ui/            # shadcn/ui components
-│   ├── hooks/             # Custom React hooks
-│   ├── services/          # API service layer
-│   ├── data/              # Mock data definitions
+│   ├── hooks/             # Custom React hooks for data management
+│   ├── services/          # API service layer with mock implementations
+│   ├── data/              # Centralized mock data definitions
 │   ├── types/             # TypeScript type definitions
 │   └── test/              # Test utilities and setup
 ├── admin/                 # Admin application

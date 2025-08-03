@@ -8,7 +8,7 @@ You are working on the Braintrust Nexus platform - an admin application with two
 - **Build Tool**: Vite
 - **Routing**: React Router v6
 - **UI Framework**: shadcn/ui components with Tailwind CSS
-- **API Layer**: Mock API services with hooks (clientApi, userApi)
+- **API Layer**: Mock API services with hooks (clientApi, userApi, subscriptionApi, workflowApi)
 - **Testing**: Vitest with React Testing Library
 - **Authentication**: Google OAuth2 (Admin) and internal auth with 2FA (Client)
 
@@ -38,8 +38,8 @@ You are working on the Braintrust Nexus platform - an admin application with two
   │   ├── client/       # Client-specific components
   │   ├── shared/       # Shared components
   │   └── ui/          # shadcn/ui components
-  ├── hooks/           # Custom React hooks (useClients, useUsers)
-  ├── services/        # API service layer (clientApi, userApi)
+  ├── hooks/           # Custom React hooks (useClients, useUsers, useSubscriptions, useWorkflows)
+  ├── services/        # API service layer (clientApi, userApi, subscriptionApi, workflowApi)
   ├── data/            # Mock data definitions
   ├── types/           # TypeScript type definitions
   ├── test/            # Test utilities and setup
@@ -66,10 +66,11 @@ You are working on the Braintrust Nexus platform - an admin application with two
 - Create reusable components when patterns emerge
 
 ### API Service Layer
-- Use the established service pattern (clientApi, userApi) for all data operations
+- Use the established service pattern (clientApi, userApi, subscriptionApi, workflowApi) for all data operations
 - Never import mockData directly in components - always go through service layer
 - Implement proper pagination, filtering, and sorting in services
-- Use custom hooks (useClients, useUsers) to integrate services with components
+- Use custom hooks (useClients, useUsers, useSubscriptions, useWorkflows) to integrate services with components
+- All data comes from centralized mockData.ts and is accessed through services
 - Follow this pattern for new services:
   ```typescript
   // Service class with static methods
@@ -107,17 +108,22 @@ You are working on the Braintrust Nexus platform - an admin application with two
 ## Key Features Context
 
 ### Admin App Features
-- Dashboard with data filters (7 days, 30 days, MTD, QTD, YTD, ITD)
-- Global metrics cards with trend indicators
-- Client management with sorting and filtering
-- Workflow management and exception handling
-- ROI tracking and reporting
+- **Dashboard**: Data filters (7 days, 30 days, MTD, QTD, YTD, ITD) with metrics cards
+- **Client Management**: Add new clients with comprehensive validation (email, phone, URL)
+- **User Management**: Complete CRUD operations with role-based access control
+- **Subscription Management**: Create/manage subscription plans with pricing models
+- **Workflow Management**: Exception handling and ROI tracking
+- **Billing & Credentials**: Management interfaces
 
 ### Client App Features
-- Workflow management and monitoring
-- Exception reporting and resolution
-- Execution history viewing
-- Custom agent configuration
+- **Workflows**: Complete workflow ROI management with create/edit functionality
+  - Click workflow names to edit existing workflows
+  - Toggle workflow status (active/inactive/testing/development)
+  - Track time saved, cost saved, nodes, executions, exceptions
+  - Sort by date, department, name, and metrics
+- **Exception Management**: Reporting and resolution
+- **Custom Agent Configuration**: Agent setup and monitoring
+- **Billing & Credentials**: Client-specific views
 
 ## Development Workflow
 1. **Before coding**: Read existing code to understand patterns
@@ -141,8 +147,8 @@ import React from 'react'
 import { useState, useEffect } from 'react'
 
 // 2. Custom hooks and services
-import { useUsers, useClients } from '@/hooks/useUsers'
-import { userApi } from '@/services/userApi'
+import { useUsers, useClients, useSubscriptions, useWorkflows } from '@/hooks'
+import { userApi, clientApi, subscriptionApi, workflowApi } from '@/services'
 
 // 3. UI components
 import { Button } from '@/components/ui/button'
@@ -184,6 +190,7 @@ npm run test       # Run tests
 ## Common Anti-Patterns to Avoid
 - Using `any` type in TypeScript
 - Directly importing mockData in components (use service layer)
+- Not following the centralized data flow pattern (mockData → service → hook → component)
 - Directly mutating state
 - Missing dependency arrays in useEffect
 - Inline styles instead of Tailwind classes
@@ -192,6 +199,10 @@ npm run test       # Run tests
 - Inconsistent component organization
 - Not following established service/hook patterns
 - Not mocking hooks properly in tests
+- Creating separate components for create/edit when one can handle both
+- Not implementing proper form validation and error handling
+- Missing loading states during API operations
+- Not refreshing data after successful mutations
 
 ## Project-Specific Patterns
 
@@ -201,22 +212,36 @@ mockData → API Service → Custom Hook → Component
 ```
 
 ### Service Layer Pattern
-- All data access goes through services (clientApi, userApi)
+- All data access goes through services (clientApi, userApi, subscriptionApi, workflowApi)
 - Services simulate API delays with `simulateApiDelay()`
 - Services return standardized `ApiResponse<T>` or `PaginatedResponse<T>`
 - Services handle filtering, pagination, and sorting
+- Services provide CRUD operations (create, read, update, delete)
+- Services handle data mutations and status updates
 
 ### Hook Pattern
 - Custom hooks manage state and API integration
 - Hooks provide loading, error, and data states
 - Hooks offer methods for updating filters/search/pagination
-- Multiple specialized hooks per service (e.g., useUsers, useUserStats)
+- Multiple specialized hooks per service (e.g., useUsers, useUserStats, useSubscriptions, useWorkflows)
+- Hooks handle refetching data after mutations
+- Hooks provide proper TypeScript typing for all return values
 
 ### Component Integration
 - Components use hooks, never call services directly
 - Always handle loading and error states from hooks
 - Use hook methods for user interactions (updateSearch, updateRole, etc.)
 - Mock hooks in tests, not services
+
+### Form Management Pattern
+- Use controlled components with useState for form data
+- Implement comprehensive client-side validation
+- Handle form submission with proper error handling and loading states
+- Use modal dialogs for create/edit operations (following UserManagement pattern)
+- Provide success feedback and automatic form closure
+- Scroll to error messages for better UX
+- Support both create and edit modes in the same component
+- Reset form data on close/cancel
 
 ## When Making Changes
 1. Always check existing similar components first
